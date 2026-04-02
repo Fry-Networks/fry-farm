@@ -1,0 +1,17 @@
+{
+  "network": "testnet",
+  "algodServer": "https://testnet-api.4160.nodely.dev",
+  "algodPort": 443,
+  "algodToken": "",
+  "creator": {
+    "addr": "4CBBC4MHZ4DB4VYDUY2W4CHIBOIYU53UB6PWBUCKZZT7UO433OBILJVWBE",
+    "mnemonic": "surge program dry edit lawn raw upset thought hood pilot sword faith noble detail sell imitate tired crumble negative season vintage public more ability manual"
+  },
+  "staker": {
+    "addr": "HEPJ3Y7FK3ELTCSBZCCSXFN3EW5RUFEQTGUV5DWOIZUVR5SOGJ6RRTEIAI",
+    "mnemonic": "brick lawn enjoy bacon swallow velvet horse west toward camera spoon tape round demand vague budget trumpet panda label earth inner silk correct abandon scatter"
+  },
+  "stakeASAId": 757045852,
+  "rewardASAId": 757045853,
+  "funded": true
+}

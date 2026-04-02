@@ -1,0 +1,78 @@
+import abc
+import typing
+from collections.abc import Sequence
+
+from puya.awst.nodes import (
+    BoxValueExpression,
+    ExpressionStatement,
+    StateDelete,
+    StateGet,
+    StateGetEx,
+    Statement,
+)
+from puya.parse import SourceLocation
+from puyapy import models
+from puyapy.awst_build import pytypes
+from puyapy.awst_build.eb import _expect as expect
+from puyapy.awst_build.eb._base import FunctionBuilder
+from puyapy.awst_build.eb.factories import builder_for_instance
+from puyapy.awst_build.eb.interface import InstanceBuilder, NodeBuilder
+from puyapy.awst_build.eb.storage._value_proxy import ValueProxyExpressionBuilder
+from puyapy.awst_build.eb.tuple import TupleExpressionBuilder
+
+
+class _BoxKeyExpressionIntermediateExpressionBuilder(FunctionBuilder, abc.ABC):
+    def __init__(self, box: BoxValueExpression, content_type: pytypes.PyType) -> None:
+        super().__init__(box.source_location)
+        self.box = box
+        self.content_type = content_type
+
+
+class BoxGetExpressionBuilder(_BoxKeyExpressionIntermediateExpressionBuilder):
+    @typing.override
+    def call(
+        self,
+        args: Sequence[NodeBuilder],
+        arg_kinds: list[models.ArgKind],
+        arg_names: list[str | None],
+        location: SourceLocation,
+    ) -> InstanceBuilder:
+        default_arg_inst = expect.exactly_one_arg_of_type_else_dummy(
+            args, self.content_type, location
+        )
+        default_expr = default_arg_inst.resolve()
+        return builder_for_instance(
+            self.content_type,
+            StateGet(field=self.box, default=default_expr, source_location=location),
+        )
+
+
+class BoxMaybeExpressionBuilder(_BoxKeyExpressionIntermediateExpressionBuilder):
+    @typing.override
+    def call(
+        self,
+        args: Sequence[NodeBuilder],
+        arg_kinds: list[models.ArgKind],
+        arg_names: list[str | None],
+        location: SourceLocation,
+    ) -> InstanceBuilder:
+        expect.no_args(args, location)
+        result_type = pytypes.GenericTupleType.parameterise(
+            [self.content_type, pytypes.BoolType], location
+        )
+        return TupleExpressionBuilder(
+            StateGetEx(field=self.box, source_location=location),
+            result_type,
+        )
+
+
+class BoxValueExpressionBuilder(ValueProxyExpressionBuilder[pytypes.PyType, BoxValueExpression]):
+    """This is used to intercept operations on Box and BoxMap values to use more efficient
+    ops (i.e. box_extract, box_length) where possible and provide support for operations like
+    delete"""
+
+    @typing.override
+    def delete(self, location: SourceLocation) -> Statement:
+        return ExpressionStatement(
+            expr=StateDelete(field=self.resolve(), source_location=location)
+        )

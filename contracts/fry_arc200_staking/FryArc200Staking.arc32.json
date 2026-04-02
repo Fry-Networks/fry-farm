@@ -1,0 +1,423 @@
+{
+  "name": "FryArc200Staking",
+  "methods": [
+    {
+      "name": "init_staking",
+      "args": [
+        {
+          "type": "address",
+          "name": "_authority"
+        },
+        {
+          "type": "uint64",
+          "name": "_lp_token_app"
+        },
+        {
+          "type": "uint64",
+          "name": "_reward_token_id"
+        },
+        {
+          "type": "uint64",
+          "name": "_reward_token_type"
+        },
+        {
+          "type": "uint64",
+          "name": "_reward_token_amount"
+        },
+        {
+          "type": "uint64",
+          "name": "_stake_start_time"
+        },
+        {
+          "type": "uint64",
+          "name": "_stake_end_time"
+        },
+        {
+          "type": "uint64",
+          "name": "_lock_period"
+        },
+        {
+          "type": "uint64",
+          "name": "_pool_time"
+        }
+      ],
+      "returns": {
+        "type": "void"
+      }
+    },
+    {
+      "name": "optInAsset",
+      "args": [
+        {
+          "type": "uint64",
+          "name": "asset_id"
+        },
+        {
+          "type": "pay",
+          "name": "mbr_pay"
+        }
+      ],
+      "returns": {
+        "type": "void"
+      }
+    },
+    {
+      "name": "assetReceive",
+      "args": [
+        {
+          "type": "axfer",
+          "name": "reward_token_transfer"
+        }
+      ],
+      "returns": {
+        "type": "void"
+      }
+    },
+    {
+      "name": "nativeReceive",
+      "args": [
+        {
+          "type": "pay",
+          "name": "reward_payment"
+        }
+      ],
+      "returns": {
+        "type": "void"
+      }
+    },
+    {
+      "name": "arc200RewardReceive",
+      "args": [
+        {
+          "type": "appl",
+          "name": "reward_transfer_call"
+        }
+      ],
+      "returns": {
+        "type": "void"
+      }
+    },
+    {
+      "name": "stakeTokens",
+      "args": [
+        {
+          "type": "uint64",
+          "name": "stake_amount"
+        },
+        {
+          "type": "uint64",
+          "name": "updated_apr"
+        },
+        {
+          "type": "appl",
+          "name": "lp_transfer_call"
+        },
+        {
+          "type": "pay",
+          "name": "box_tx"
+        }
+      ],
+      "returns": {
+        "type": "void"
+      }
+    },
+    {
+      "name": "unstakeTokens",
+      "args": [
+        {
+          "type": "uint64",
+          "name": "unstake_amount"
+        },
+        {
+          "type": "uint64",
+          "name": "updated_apr"
+        }
+      ],
+      "returns": {
+        "type": "void"
+      }
+    },
+    {
+      "name": "claimTokens",
+      "args": [
+        {
+          "type": "uint64",
+          "name": "updated_apr"
+        }
+      ],
+      "returns": {
+        "type": "void"
+      }
+    },
+    {
+      "name": "compound",
+      "args": [
+        {
+          "type": "uint64",
+          "name": "updated_apr"
+        }
+      ],
+      "returns": {
+        "type": "void"
+      }
+    }
+  ],
+  "contract": {
+    "name": "FryArc200Staking",
+    "methods": [
+      {
+        "name": "init_staking",
+        "args": [
+          {
+            "type": "address",
+            "name": "_authority"
+          },
+          {
+            "type": "uint64",
+            "name": "_lp_token_app"
+          },
+          {
+            "type": "uint64",
+            "name": "_reward_token_id"
+          },
+          {
+            "type": "uint64",
+            "name": "_reward_token_type"
+          },
+          {
+            "type": "uint64",
+            "name": "_reward_token_amount"
+          },
+          {
+            "type": "uint64",
+            "name": "_stake_start_time"
+          },
+          {
+            "type": "uint64",
+            "name": "_stake_end_time"
+          },
+          {
+            "type": "uint64",
+            "name": "_lock_period"
+          },
+          {
+            "type": "uint64",
+            "name": "_pool_time"
+          }
+        ],
+        "returns": {
+          "type": "void"
+        }
+      },
+      {
+        "name": "optInAsset",
+        "args": [
+          {
+            "type": "uint64",
+            "name": "asset_id"
+          },
+          {
+            "type": "pay",
+            "name": "mbr_pay"
+          }
+        ],
+        "returns": {
+          "type": "void"
+        }
+      },
+      {
+        "name": "assetReceive",
+        "args": [
+          {
+            "type": "axfer",
+            "name": "reward_token_transfer"
+          }
+        ],
+        "returns": {
+          "type": "void"
+        }
+      },
+      {
+        "name": "nativeReceive",
+        "args": [
+          {
+            "type": "pay",
+            "name": "reward_payment"
+          }
+        ],
+        "returns": {
+          "type": "void"
+        }
+      },
+      {
+        "name": "arc200RewardReceive",
+        "args": [
+          {
+            "type": "appl",
+            "name": "reward_transfer_call"
+          }
+        ],
+        "returns": {
+          "type": "void"
+        }
+      },
+      {
+        "name": "stakeTokens",
+        "args": [
+          {
+            "type": "uint64",
+            "name": "stake_amount"
+          },
+          {
+            "type": "uint64",
+            "name": "updated_apr"
+          },
+          {
+            "type": "appl",
+            "name": "lp_transfer_call"
+          },
+          {
+            "type": "pay",
+            "name": "box_tx"
+          }
+        ],
+        "returns": {
+          "type": "void"
+        }
+      },
+      {
+        "name": "unstakeTokens",
+        "args": [
+          {
+            "type": "uint64",
+            "name": "unstake_amount"
+          },
+          {
+            "type": "uint64",
+            "name": "updated_apr"
+          }
+        ],
+        "returns": {
+          "type": "void"
+        }
+      },
+      {
+        "name": "claimTokens",
+        "args": [
+          {
+            "type": "uint64",
+            "name": "updated_apr"
+          }
+        ],
+        "returns": {
+          "type": "void"
+        }
+      },
+      {
+        "name": "compound",
+        "args": [
+          {
+            "type": "uint64",
+            "name": "updated_apr"
+          }
+        ],
+        "returns": {
+          "type": "void"
+        }
+      }
+    ]
+  },
+  "state": {
+    "schema": {
+      "global": {
+        "ints": 13,
+        "bytes": 1
+      },
+      "local": {
+        "ints": 0,
+        "bytes": 0
+      }
+    },
+    "keys": {
+      "global": {
+        "authority": {
+          "keyType": "AVMString",
+          "valueType": "address",
+          "key": "YXV0aG9yaXR5"
+        },
+        "lp_token_app": {
+          "keyType": "AVMString",
+          "valueType": "AVMUint64",
+          "key": "bHBfdG9rZW5fYXBw"
+        },
+        "reward_token_id": {
+          "keyType": "AVMString",
+          "valueType": "AVMUint64",
+          "key": "cmV3YXJkX3Rva2VuX2lk"
+        },
+        "reward_token_type": {
+          "keyType": "AVMString",
+          "valueType": "AVMUint64",
+          "key": "cmV3YXJkX3Rva2VuX3R5cGU="
+        },
+        "reward_token_amount": {
+          "keyType": "AVMString",
+          "valueType": "AVMUint64",
+          "key": "cmV3YXJkX3Rva2VuX2Ftb3VudA=="
+        },
+        "total_stakers": {
+          "keyType": "AVMString",
+          "valueType": "AVMUint64",
+          "key": "dG90YWxfc3Rha2Vycw=="
+        },
+        "total_staked": {
+          "keyType": "AVMString",
+          "valueType": "AVMUint64",
+          "key": "dG90YWxfc3Rha2Vk"
+        },
+        "created_At": {
+          "keyType": "AVMString",
+          "valueType": "AVMUint64",
+          "key": "Y3JlYXRlZF9BdA=="
+        },
+        "stake_start_time": {
+          "keyType": "AVMString",
+          "valueType": "AVMUint64",
+          "key": "c3Rha2Vfc3RhcnRfdGltZQ=="
+        },
+        "stake_end_time": {
+          "keyType": "AVMString",
+          "valueType": "AVMUint64",
+          "key": "c3Rha2VfZW5kX3RpbWU="
+        },
+        "lock_period": {
+          "keyType": "AVMString",
+          "valueType": "AVMUint64",
+          "key": "bG9ja19wZXJpb2Q="
+        },
+        "rewards_distributed": {
+          "keyType": "AVMString",
+          "valueType": "AVMUint64",
+          "key": "cmV3YXJkc19kaXN0cmlidXRlZA=="
+        },
+        "pool_time": {
+          "keyType": "AVMString",
+          "valueType": "AVMUint64",
+          "key": "cG9vbF90aW1l"
+        },
+        "apr": {
+          "keyType": "AVMString",
+          "valueType": "AVMUint64",
+          "key": "YXBy"
+        }
+      },
+      "local": {},
+      "box": {}
+    },
+    "maps": {
+      "global": {},
+      "local": {},
+      "box": {}
+    }
+  }
+}

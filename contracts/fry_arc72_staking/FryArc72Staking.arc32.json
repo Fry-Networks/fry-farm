@@ -1,0 +1,612 @@
+{
+  "name": "FryArc72Staking",
+  "methods": [
+    {
+      "name": "init_pool",
+      "args": [
+        {
+          "type": "uint64",
+          "name": "reward_token_id"
+        },
+        {
+          "type": "uint64",
+          "name": "reward_token_type"
+        },
+        {
+          "type": "uint64",
+          "name": "reward_model"
+        },
+        {
+          "type": "uint64",
+          "name": "collection_mode"
+        },
+        {
+          "type": "uint64",
+          "name": "collection_app"
+        },
+        {
+          "type": "uint64",
+          "name": "nft_value"
+        },
+        {
+          "type": "uint64",
+          "name": "rate_per_day"
+        },
+        {
+          "type": "uint64",
+          "name": "total_reward_pool"
+        },
+        {
+          "type": "uint64",
+          "name": "apr_rate"
+        },
+        {
+          "type": "uint64",
+          "name": "value_per_nft"
+        },
+        {
+          "type": "uint64",
+          "name": "pool_end_time"
+        },
+        {
+          "type": "uint64",
+          "name": "lock_period"
+        },
+        {
+          "type": "address",
+          "name": "fee_recipient"
+        },
+        {
+          "type": "uint64",
+          "name": "deposit_fee_bps"
+        },
+        {
+          "type": "uint64",
+          "name": "withdraw_fee_bps"
+        },
+        {
+          "type": "uint64",
+          "name": "claim_fee_bps"
+        }
+      ],
+      "returns": {
+        "type": "void"
+      }
+    },
+    {
+      "name": "add_to_whitelist",
+      "args": [
+        {
+          "type": "uint64",
+          "name": "collection_app_id"
+        },
+        {
+          "type": "uint64",
+          "name": "token_index"
+        }
+      ],
+      "returns": {
+        "type": "void"
+      }
+    },
+    {
+      "name": "remove_from_whitelist",
+      "args": [
+        {
+          "type": "uint64",
+          "name": "collection_app_id"
+        },
+        {
+          "type": "uint64",
+          "name": "token_index"
+        }
+      ],
+      "returns": {
+        "type": "void"
+      }
+    },
+    {
+      "name": "opt_in_asset",
+      "args": [
+        {
+          "type": "uint64",
+          "name": "asset"
+        },
+        {
+          "type": "pay",
+          "name": "mbr_payment"
+        }
+      ],
+      "returns": {
+        "type": "void"
+      }
+    },
+    {
+      "name": "deposit_rewards",
+      "args": [
+        {
+          "type": "axfer",
+          "name": "reward_txn"
+        }
+      ],
+      "returns": {
+        "type": "void"
+      }
+    },
+    {
+      "name": "deposit_rewards_algo",
+      "args": [
+        {
+          "type": "pay",
+          "name": "payment"
+        }
+      ],
+      "returns": {
+        "type": "void"
+      }
+    },
+    {
+      "name": "deposit_rewards_arc200",
+      "args": [
+        {
+          "type": "appl",
+          "name": "reward_transfer_call"
+        }
+      ],
+      "returns": {
+        "type": "void"
+      }
+    },
+    {
+      "name": "set_reward_balance",
+      "args": [
+        {
+          "type": "uint64",
+          "name": "new_balance"
+        }
+      ],
+      "returns": {
+        "type": "void"
+      }
+    },
+    {
+      "name": "stake_nft",
+      "args": [
+        {
+          "type": "uint64",
+          "name": "collection_app_id"
+        },
+        {
+          "type": "uint64",
+          "name": "token_index"
+        },
+        {
+          "type": "pay",
+          "name": "box_payment"
+        }
+      ],
+      "returns": {
+        "type": "void"
+      }
+    },
+    {
+      "name": "unstake_nft",
+      "args": [
+        {
+          "type": "uint64",
+          "name": "collection_app_id"
+        },
+        {
+          "type": "uint64",
+          "name": "token_index"
+        }
+      ],
+      "returns": {
+        "type": "void"
+      }
+    },
+    {
+      "name": "claim_rewards",
+      "args": [],
+      "returns": {
+        "type": "void"
+      }
+    },
+    {
+      "name": "pause_pool",
+      "args": [],
+      "returns": {
+        "type": "void"
+      }
+    },
+    {
+      "name": "resume_pool",
+      "args": [],
+      "returns": {
+        "type": "void"
+      }
+    },
+    {
+      "name": "update_end_time",
+      "args": [
+        {
+          "type": "uint64",
+          "name": "new_end_time"
+        }
+      ],
+      "returns": {
+        "type": "void"
+      }
+    }
+  ],
+  "contract": {
+    "name": "FryArc72Staking",
+    "methods": [
+      {
+        "name": "init_pool",
+        "args": [
+          {
+            "type": "uint64",
+            "name": "reward_token_id"
+          },
+          {
+            "type": "uint64",
+            "name": "reward_token_type"
+          },
+          {
+            "type": "uint64",
+            "name": "reward_model"
+          },
+          {
+            "type": "uint64",
+            "name": "collection_mode"
+          },
+          {
+            "type": "uint64",
+            "name": "collection_app"
+          },
+          {
+            "type": "uint64",
+            "name": "nft_value"
+          },
+          {
+            "type": "uint64",
+            "name": "rate_per_day"
+          },
+          {
+            "type": "uint64",
+            "name": "total_reward_pool"
+          },
+          {
+            "type": "uint64",
+            "name": "apr_rate"
+          },
+          {
+            "type": "uint64",
+            "name": "value_per_nft"
+          },
+          {
+            "type": "uint64",
+            "name": "pool_end_time"
+          },
+          {
+            "type": "uint64",
+            "name": "lock_period"
+          },
+          {
+            "type": "address",
+            "name": "fee_recipient"
+          },
+          {
+            "type": "uint64",
+            "name": "deposit_fee_bps"
+          },
+          {
+            "type": "uint64",
+            "name": "withdraw_fee_bps"
+          },
+          {
+            "type": "uint64",
+            "name": "claim_fee_bps"
+          }
+        ],
+        "returns": {
+          "type": "void"
+        }
+      },
+      {
+        "name": "add_to_whitelist",
+        "args": [
+          {
+            "type": "uint64",
+            "name": "collection_app_id"
+          },
+          {
+            "type": "uint64",
+            "name": "token_index"
+          }
+        ],
+        "returns": {
+          "type": "void"
+        }
+      },
+      {
+        "name": "remove_from_whitelist",
+        "args": [
+          {
+            "type": "uint64",
+            "name": "collection_app_id"
+          },
+          {
+            "type": "uint64",
+            "name": "token_index"
+          }
+        ],
+        "returns": {
+          "type": "void"
+        }
+      },
+      {
+        "name": "opt_in_asset",
+        "args": [
+          {
+            "type": "uint64",
+            "name": "asset"
+          },
+          {
+            "type": "pay",
+            "name": "mbr_payment"
+          }
+        ],
+        "returns": {
+          "type": "void"
+        }
+      },
+      {
+        "name": "deposit_rewards",
+        "args": [
+          {
+            "type": "axfer",
+            "name": "reward_txn"
+          }
+        ],
+        "returns": {
+          "type": "void"
+        }
+      },
+      {
+        "name": "deposit_rewards_algo",
+        "args": [
+          {
+            "type": "pay",
+            "name": "payment"
+          }
+        ],
+        "returns": {
+          "type": "void"
+        }
+      },
+      {
+        "name": "deposit_rewards_arc200",
+        "args": [
+          {
+            "type": "appl",
+            "name": "reward_transfer_call"
+          }
+        ],
+        "returns": {
+          "type": "void"
+        }
+      },
+      {
+        "name": "set_reward_balance",
+        "args": [
+          {
+            "type": "uint64",
+            "name": "new_balance"
+          }
+        ],
+        "returns": {
+          "type": "void"
+        }
+      },
+      {
+        "name": "stake_nft",
+        "args": [
+          {
+            "type": "uint64",
+            "name": "collection_app_id"
+          },
+          {
+            "type": "uint64",
+            "name": "token_index"
+          },
+          {
+            "type": "pay",
+            "name": "box_payment"
+          }
+        ],
+        "returns": {
+          "type": "void"
+        }
+      },
+      {
+        "name": "unstake_nft",
+        "args": [
+          {
+            "type": "uint64",
+            "name": "collection_app_id"
+          },
+          {
+            "type": "uint64",
+            "name": "token_index"
+          }
+        ],
+        "returns": {
+          "type": "void"
+        }
+      },
+      {
+        "name": "claim_rewards",
+        "args": [],
+        "returns": {
+          "type": "void"
+        }
+      },
+      {
+        "name": "pause_pool",
+        "args": [],
+        "returns": {
+          "type": "void"
+        }
+      },
+      {
+        "name": "resume_pool",
+        "args": [],
+        "returns": {
+          "type": "void"
+        }
+      },
+      {
+        "name": "update_end_time",
+        "args": [
+          {
+            "type": "uint64",
+            "name": "new_end_time"
+          }
+        ],
+        "returns": {
+          "type": "void"
+        }
+      }
+    ]
+  },
+  "state": {
+    "schema": {
+      "global": {
+        "ints": 19,
+        "bytes": 2
+      },
+      "local": {
+        "ints": 0,
+        "bytes": 0
+      }
+    },
+    "keys": {
+      "global": {
+        "creator": {
+          "keyType": "AVMString",
+          "valueType": "address",
+          "key": "Y3JlYXRvcg=="
+        },
+        "collection_app": {
+          "keyType": "AVMString",
+          "valueType": "AVMUint64",
+          "key": "Y29sbGVjdGlvbl9hcHA="
+        },
+        "fee_recipient": {
+          "keyType": "AVMString",
+          "valueType": "address",
+          "key": "ZmVlX3JlY2lwaWVudA=="
+        },
+        "reward_token_id": {
+          "keyType": "AVMString",
+          "valueType": "AVMUint64",
+          "key": "cmV3YXJkX3Rva2VuX2lk"
+        },
+        "reward_token_type": {
+          "keyType": "AVMString",
+          "valueType": "AVMUint64",
+          "key": "cmV3YXJkX3Rva2VuX3R5cGU="
+        },
+        "reward_model": {
+          "keyType": "AVMString",
+          "valueType": "AVMUint64",
+          "key": "cmV3YXJkX21vZGVs"
+        },
+        "collection_mode": {
+          "keyType": "AVMString",
+          "valueType": "AVMUint64",
+          "key": "Y29sbGVjdGlvbl9tb2Rl"
+        },
+        "nft_value": {
+          "keyType": "AVMString",
+          "valueType": "AVMUint64",
+          "key": "bmZ0X3ZhbHVl"
+        },
+        "rate_per_day": {
+          "keyType": "AVMString",
+          "valueType": "AVMUint64",
+          "key": "cmF0ZV9wZXJfZGF5"
+        },
+        "total_reward_pool": {
+          "keyType": "AVMString",
+          "valueType": "AVMUint64",
+          "key": "dG90YWxfcmV3YXJkX3Bvb2w="
+        },
+        "apr_rate": {
+          "keyType": "AVMString",
+          "valueType": "AVMUint64",
+          "key": "YXByX3JhdGU="
+        },
+        "value_per_nft": {
+          "keyType": "AVMString",
+          "valueType": "AVMUint64",
+          "key": "dmFsdWVfcGVyX25mdA=="
+        },
+        "pool_end_time": {
+          "keyType": "AVMString",
+          "valueType": "AVMUint64",
+          "key": "cG9vbF9lbmRfdGltZQ=="
+        },
+        "lock_period": {
+          "keyType": "AVMString",
+          "valueType": "AVMUint64",
+          "key": "bG9ja19wZXJpb2Q="
+        },
+        "total_nfts_staked": {
+          "keyType": "AVMString",
+          "valueType": "AVMUint64",
+          "key": "dG90YWxfbmZ0c19zdGFrZWQ="
+        },
+        "total_rewards_claimed": {
+          "keyType": "AVMString",
+          "valueType": "AVMUint64",
+          "key": "dG90YWxfcmV3YXJkc19jbGFpbWVk"
+        },
+        "deposit_fee_bps": {
+          "keyType": "AVMString",
+          "valueType": "AVMUint64",
+          "key": "ZGVwb3NpdF9mZWVfYnBz"
+        },
+        "withdraw_fee_bps": {
+          "keyType": "AVMString",
+          "valueType": "AVMUint64",
+          "key": "d2l0aGRyYXdfZmVlX2Jwcw=="
+        },
+        "claim_fee_bps": {
+          "keyType": "AVMString",
+          "valueType": "AVMUint64",
+          "key": "Y2xhaW1fZmVlX2Jwcw=="
+        },
+        "is_active": {
+          "keyType": "AVMString",
+          "valueType": "AVMUint64",
+          "key": "aXNfYWN0aXZl"
+        },
+        "total_reward_balance": {
+          "keyType": "AVMString",
+          "valueType": "AVMUint64",
+          "key": "dG90YWxfcmV3YXJkX2JhbGFuY2U="
+        }
+      },
+      "local": {},
+      "box": {}
+    },
+    "maps": {
+      "global": {},
+      "local": {},
+      "box": {}
+    }
+  }
+}

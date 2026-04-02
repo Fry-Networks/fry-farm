@@ -1,0 +1,44 @@
+{
+  "permissions": {
+    "allow": [
+      "Read",
+      "Glob",
+      "Grep",
+      "Bash(cat *)",
+      "Bash(ls *)",
+      "Bash(find *)",
+      "Bash(head *)",
+      "Bash(tail *)",
+      "Bash(wc *)",
+      "Bash(grep *)",
+      "Bash(docker logs *)",
+      "Bash(docker ps *)",
+      "Bash(curl *)",
+      "Bash(inotifywait *)",
+      "Bash(mkdir *)",
+      "Bash(echo *)"
+    ],
+    "deny": [
+      "Bash(sleep *)",
+      "Bash(rm *)",
+      "Bash(mv *)",
+      "Bash(docker restart *)",
+      "Bash(docker stop *)",
+      "Bash(npm *)",
+      "Write(*)",
+      "Edit(*)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "command": "/opt/fry-farm/.claude/hooks/pre-tool-use.sh"
+      }
+    ],
+    "Stop": [
+      {
+        "command": "/opt/fry-farm/.claude/hooks/stop.sh"
+      }
+    ]
+  }
+}

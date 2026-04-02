@@ -1,0 +1,1542 @@
+#pragma version 10
+#pragma typetrack false
+
+// algopy.arc4.ARC4Contract.approval_program() -> uint64:
+main:
+    intcblock 0 8 1 4 735549981
+    bytecblock "reward_token_amount" "stake_end_time" "lock_period" "apr" "total_staked" "rewards_distributed" "reward_token" "stake_token" "total_stakers"
+    // contract.py:22
+    // class FryStaking(ARC4Contract):
+    txn OnCompletion
+    !
+    assert
+    txn ApplicationID
+    bz main_create_NoOp@10
+    pushbytess 0xf41abdb7 0xae8f1298 0x47e31af7 0xdbb38cae 0xfd9b5c94 0xea7cbf3a // method "optInAsset(uint64,uint64,pay)void", method "assetReceive(axfer)void", method "stakeTokens(uint64,uint64,axfer,pay)void", method "unstakeTokens(uint64,uint64)void", method "claimTokens(uint64)void", method "compound(uint64)void"
+    txna ApplicationArgs 0
+    match optInAsset assetReceive stakeTokens unstakeTokens claimTokens compound
+    err
+
+main_create_NoOp@10:
+    // contract.py:22
+    // class FryStaking(ARC4Contract):
+    pushbytes 0xf3e0c03f // method "init_staking(address,uint64,uint64,uint64,uint64,uint64,uint64,uint64)void"
+    txna ApplicationArgs 0
+    match init_staking
+    err
+
+
+// contract._calc_reward(staked: uint64, apr: uint64, duration: uint64) -> uint64:
+_calc_reward:
+    // contract.py:319-320
+    // @subroutine
+    // def _calc_reward(staked: UInt64, apr: UInt64, duration: UInt64) -> UInt64:
+    proto 3 1
+    // contract.py:338
+    // if not apr or not duration:
+    frame_dig -2
+    bz _calc_reward_if_body@2
+    frame_dig -1
+    bnz _calc_reward_after_if_else@3
+
+_calc_reward_if_body@2:
+    // contract.py:339
+    // return UInt64(0)
+    intc_0 // 0
+    retsub
+
+_calc_reward_after_if_else@3:
+    // contract.py:341
+    // h, l = op.mulw(staked, duration)
+    frame_dig -3
+    frame_dig -1
+    mulw
+    // contract.py:342
+    // h2, l2 = op.mulw(l, apr)
+    frame_dig -2
+    mulw
+    // contract.py:343
+    // h_final = h * apr + h2
+    uncover 2
+    frame_dig -2
+    *
+    uncover 2
+    +
+    // contract.py:345
+    // qh, ql, _rh, _rl = op.divmodw(h_final, l2, UInt64(0), divisor)
+    swap
+    intc_0 // 0
+    // contract.py:344
+    // divisor = UInt64(10000) * UInt64(SECONDS_PER_YEAR)
+    pushint 311040000000
+    // contract.py:345
+    // qh, ql, _rh, _rl = op.divmodw(h_final, l2, UInt64(0), divisor)
+    divmodw
+    popn 2
+    swap
+    // contract.py:346
+    // assert not qh, "Reward overflow"
+    !
+    assert // Reward overflow
+    // contract.py:347
+    // return ql
+    retsub
+
+
+// contract.FryStaking.init_staking[routing]() -> void:
+init_staking:
+    // contract.py:27
+    // @arc4.abimethod(create="require")
+    txna ApplicationArgs 1
+    dup
+    len
+    pushint 32
+    ==
+    assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>
+    txna ApplicationArgs 2
+    dup
+    len
+    intc_1 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    btoi
+    txna ApplicationArgs 3
+    dup
+    len
+    intc_1 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    btoi
+    txna ApplicationArgs 4
+    dup
+    len
+    intc_1 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    btoi
+    txna ApplicationArgs 5
+    dup
+    len
+    intc_1 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    btoi
+    txna ApplicationArgs 6
+    dup
+    len
+    intc_1 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    btoi
+    txna ApplicationArgs 7
+    dup
+    len
+    intc_1 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    btoi
+    txna ApplicationArgs 8
+    dup
+    len
+    intc_1 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    btoi
+    // contract.py:39
+    // assert _authority == Txn.sender, "Invalid Authority"
+    txn Sender
+    uncover 8
+    ==
+    assert // Invalid Authority
+    // contract.py:41-42
+    // # Default 0 token IDs to FRY sentinel (matching V1 behavior)
+    // stake_token = _stake_token if _stake_token else UInt64(DEFAULT_TOKEN)
+    intc 4 // 735549981
+    dig 7
+    uncover 8
+    select
+    // contract.py:43
+    // reward_token = _reward_token if _reward_token else UInt64(DEFAULT_TOKEN)
+    intc 4 // 735549981
+    dig 7
+    uncover 8
+    select
+    // contract.py:45
+    // assert _stake_end_time > _stake_start_time, "End time must be greater than start time"
+    dig 4
+    dig 6
+    >
+    assert // End time must be greater than start time
+    // contract.py:47
+    // self.authority = Txn.sender
+    pushbytes "authority"
+    txn Sender
+    app_global_put
+    // contract.py:48
+    // self.stake_token = stake_token
+    bytec 7 // "stake_token"
+    uncover 2
+    app_global_put
+    // contract.py:49
+    // self.reward_token = reward_token
+    bytec 6 // "reward_token"
+    swap
+    app_global_put
+    // contract.py:50
+    // self.reward_token_amount = _reward_token_amount
+    bytec_0 // "reward_token_amount"
+    uncover 5
+    app_global_put
+    // contract.py:51
+    // self.total_stakers = UInt64(0)
+    bytec 8 // "total_stakers"
+    intc_0 // 0
+    app_global_put
+    // contract.py:52
+    // self.total_staked = UInt64(0)
+    bytec 4 // "total_staked"
+    intc_0 // 0
+    app_global_put
+    // contract.py:53
+    // self.created_At = Global.latest_timestamp
+    pushbytes "created_At"
+    global LatestTimestamp
+    app_global_put
+    // contract.py:54
+    // self.stake_start_time = _stake_start_time
+    pushbytes "stake_start_time"
+    uncover 4
+    app_global_put
+    // contract.py:55
+    // self.stake_end_time = _stake_end_time
+    bytec_1 // "stake_end_time"
+    uncover 3
+    app_global_put
+    // contract.py:56
+    // self.lock_period = _lock_period
+    bytec_2 // "lock_period"
+    uncover 2
+    app_global_put
+    // contract.py:57
+    // self.rewards_distributed = UInt64(0)
+    bytec 5 // "rewards_distributed"
+    intc_0 // 0
+    app_global_put
+    // contract.py:58
+    // self.pool_time = _pool_time
+    pushbytes "pool_time"
+    swap
+    app_global_put
+    // contract.py:59
+    // self.apr = UInt64(0)
+    bytec_3 // "apr"
+    intc_0 // 0
+    app_global_put
+    // contract.py:27
+    // @arc4.abimethod(create="require")
+    intc_2 // 1
+    return
+
+
+// contract.FryStaking.optInAsset[routing]() -> void:
+optInAsset:
+    // contract.py:63
+    // @arc4.abimethod()
+    txna ApplicationArgs 1
+    dup
+    len
+    intc_1 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    btoi
+    txna ApplicationArgs 2
+    dup
+    len
+    intc_1 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    btoi
+    txn GroupIndex
+    intc_2 // 1
+    -
+    dup
+    gtxns TypeEnum
+    intc_2 // pay
+    ==
+    assert // transaction type is pay
+    // contract.py:70
+    // assert mbr_pay.receiver == Global.current_application_address
+    dup
+    gtxns Receiver
+    global CurrentApplicationAddress
+    ==
+    assert
+    // contract.py:71
+    // assert mbr_pay.amount >= Global.asset_opt_in_min_balance, "opt-in balance unverified"
+    gtxns Amount
+    global AssetOptInMinBalance
+    >=
+    assert // opt-in balance unverified
+    // contract.py:73-78
+    // itxn.AssetTransfer(
+    //     xfer_asset=asset_one,
+    //     asset_receiver=Global.current_application_address,
+    //     asset_amount=0,
+    //     fee=0,
+    // ).submit()
+    itxn_begin
+    // contract.py:75
+    // asset_receiver=Global.current_application_address,
+    global CurrentApplicationAddress
+    // contract.py:76
+    // asset_amount=0,
+    intc_0 // 0
+    itxn_field AssetAmount
+    itxn_field AssetReceiver
+    swap
+    itxn_field XferAsset
+    // contract.py:73
+    // itxn.AssetTransfer(
+    intc_3 // axfer
+    itxn_field TypeEnum
+    // contract.py:77
+    // fee=0,
+    intc_0 // 0
+    itxn_field Fee
+    // contract.py:73-78
+    // itxn.AssetTransfer(
+    //     xfer_asset=asset_one,
+    //     asset_receiver=Global.current_application_address,
+    //     asset_amount=0,
+    //     fee=0,
+    // ).submit()
+    itxn_submit
+    // contract.py:80-85
+    // itxn.AssetTransfer(
+    //     xfer_asset=asset_two,
+    //     asset_receiver=Global.current_application_address,
+    //     asset_amount=0,
+    //     fee=0,
+    // ).submit()
+    itxn_begin
+    // contract.py:82
+    // asset_receiver=Global.current_application_address,
+    global CurrentApplicationAddress
+    // contract.py:83
+    // asset_amount=0,
+    intc_0 // 0
+    itxn_field AssetAmount
+    itxn_field AssetReceiver
+    itxn_field XferAsset
+    // contract.py:80
+    // itxn.AssetTransfer(
+    intc_3 // axfer
+    itxn_field TypeEnum
+    // contract.py:84
+    // fee=0,
+    intc_0 // 0
+    itxn_field Fee
+    // contract.py:80-85
+    // itxn.AssetTransfer(
+    //     xfer_asset=asset_two,
+    //     asset_receiver=Global.current_application_address,
+    //     asset_amount=0,
+    //     fee=0,
+    // ).submit()
+    itxn_submit
+    // contract.py:63
+    // @arc4.abimethod()
+    intc_2 // 1
+    return
+
+
+// contract.FryStaking.assetReceive[routing]() -> void:
+assetReceive:
+    // contract.py:89
+    // @arc4.abimethod()
+    txn GroupIndex
+    intc_2 // 1
+    -
+    dup
+    gtxns TypeEnum
+    intc_3 // axfer
+    ==
+    assert // transaction type is axfer
+    // contract.py:94
+    // assert reward_token_transfer.asset_receiver == Global.current_application_address
+    dup
+    gtxns AssetReceiver
+    global CurrentApplicationAddress
+    ==
+    assert
+    // contract.py:95
+    // assert reward_token_transfer.xfer_asset == Asset(self.reward_token)
+    dup
+    gtxns XferAsset
+    intc_0 // 0
+    bytec 6 // "reward_token"
+    app_global_get_ex
+    assert // check self.reward_token exists
+    ==
+    assert
+    // contract.py:96
+    // assert reward_token_transfer.asset_amount == self.reward_token_amount
+    gtxns AssetAmount
+    intc_0 // 0
+    bytec_0 // "reward_token_amount"
+    app_global_get_ex
+    assert // check self.reward_token_amount exists
+    ==
+    assert
+    // contract.py:89
+    // @arc4.abimethod()
+    intc_2 // 1
+    return
+
+
+// contract.FryStaking.stakeTokens[routing]() -> void:
+stakeTokens:
+    pushbytes ""
+    dupn 2
+    // contract.py:100
+    // @arc4.abimethod()
+    txna ApplicationArgs 1
+    dup
+    len
+    intc_1 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    btoi
+    dup
+    txna ApplicationArgs 2
+    dup
+    len
+    intc_1 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    btoi
+    swap
+    txn GroupIndex
+    pushint 2
+    -
+    dup
+    gtxns TypeEnum
+    intc_3 // axfer
+    ==
+    assert // transaction type is axfer
+    txn GroupIndex
+    intc_2 // 1
+    -
+    dup
+    gtxns TypeEnum
+    intc_2 // pay
+    ==
+    assert // transaction type is pay
+    // contract.py:108-109
+    // # Verify the asset transfer
+    // assert stake_axfer.asset_amount == stake_amount, "received and entered amount are not valid"
+    dig 1
+    gtxns AssetAmount
+    uncover 3
+    ==
+    assert // received and entered amount are not valid
+    // contract.py:110
+    // assert stake_axfer.xfer_asset == Asset(self.stake_token)
+    dig 1
+    gtxns XferAsset
+    intc_0 // 0
+    bytec 7 // "stake_token"
+    app_global_get_ex
+    assert // check self.stake_token exists
+    ==
+    assert
+    // contract.py:111
+    // assert stake_axfer.asset_receiver == Global.current_application_address, "invalid receiver"
+    swap
+    gtxns AssetReceiver
+    global CurrentApplicationAddress
+    ==
+    assert // invalid receiver
+    // contract.py:113-114
+    // # Verify box payment
+    // assert box_tx.amount == UInt64(28100), "Invalid storage payment"
+    dup
+    gtxns Amount
+    pushint 28100
+    ==
+    assert // Invalid storage payment
+    // contract.py:115
+    // assert box_tx.receiver == Global.current_application_address, "invalid receiver"
+    gtxns Receiver
+    global CurrentApplicationAddress
+    ==
+    assert // invalid receiver
+    // contract.py:117
+    // user_box = Box(Bytes, key=Txn.sender.bytes)
+    txn Sender
+    dup
+    // contract.py:119
+    // if user_box:
+    box_len
+    bury 1
+    bz stakeTokens_else_body@9
+    // contract.py:120-121
+    // # Existing staker — auto-claim pending rewards
+    // staked = op.btoi(user_box.extract(0, 8))
+    dupn 2
+    intc_0 // 0
+    intc_1 // 8
+    box_extract
+    btoi
+    bury 5
+    // contract.py:122
+    // stake_time = op.btoi(user_box.extract(8, 8))
+    intc_1 // 8
+    dup
+    box_extract
+    btoi
+    // contract.py:123
+    // duration = Global.latest_timestamp - stake_time
+    global LatestTimestamp
+    swap
+    -
+    bury 6
+    // contract.py:125
+    // if self.lock_period:
+    intc_0 // 0
+    bytec_2 // "lock_period"
+    app_global_get_ex
+    assert // check self.lock_period exists
+    bz stakeTokens_after_if_else@8
+    // contract.py:126
+    // if self.lock_period < duration:
+    intc_0 // 0
+    bytec_2 // "lock_period"
+    app_global_get_ex
+    assert // check self.lock_period exists
+    dig 6
+    <
+    bz stakeTokens_after_if_else@8
+    // contract.py:127-128
+    // # Lock period passed — calculate and store pending reward
+    // reward = _calc_reward(staked, self.apr, duration)
+    intc_0 // 0
+    bytec_3 // "apr"
+    app_global_get_ex
+    assert // check self.apr exists
+    dig 4
+    swap
+    dig 7
+    callsub _calc_reward
+    dup
+    bury 6
+    // contract.py:129
+    // if reward > self.reward_token_amount:
+    intc_0 // 0
+    bytec_0 // "reward_token_amount"
+    app_global_get_ex
+    assert // check self.reward_token_amount exists
+    >
+    bz stakeTokens_after_if_else@6
+    // contract.py:130
+    // reward = self.reward_token_amount
+    intc_0 // 0
+    bytec_0 // "reward_token_amount"
+    app_global_get_ex
+    swap
+    bury 6
+    assert // check self.reward_token_amount exists
+
+stakeTokens_after_if_else@6:
+    // contract.py:131
+    // user_box.replace(16, op.itob(reward))
+    dig 4
+    itob
+    dig 1
+    pushint 16
+    uncover 2
+    box_replace
+
+stakeTokens_after_if_else@8:
+    // contract.py:133-134
+    // # Update staked amount and reset stake time
+    // user_box.replace(0, op.itob(staked + stake_amount))
+    dig 3
+    dig 3
+    dup
+    cover 2
+    +
+    itob
+    dig 2
+    dup
+    cover 2
+    intc_0 // 0
+    uncover 2
+    box_replace
+    // contract.py:135
+    // user_box.replace(8, op.itob(Global.latest_timestamp))
+    global LatestTimestamp
+    itob
+    intc_1 // 8
+    swap
+    box_replace
+    // contract.py:136
+    // self.total_staked += stake_amount
+    intc_0 // 0
+    bytec 4 // "total_staked"
+    app_global_get_ex
+    assert // check self.total_staked exists
+    +
+    bytec 4 // "total_staked"
+    swap
+    app_global_put
+
+stakeTokens_after_if_else@10:
+    // contract.py:147
+    // self.apr = updated_apr
+    bytec_3 // "apr"
+    dig 2
+    app_global_put
+    // contract.py:100
+    // @arc4.abimethod()
+    intc_2 // 1
+    return
+
+stakeTokens_else_body@9:
+    // contract.py:138-139
+    // # New staker — create box
+    // user_box.create(size=UInt64(BOX_SIZE))
+    dupn 2
+    pushint 32
+    box_create
+    pop
+    // contract.py:140
+    // user_box.replace(0, op.itob(stake_amount))
+    dig 3
+    dup
+    cover 2
+    itob
+    dig 1
+    intc_0 // 0
+    uncover 2
+    box_replace
+    // contract.py:141
+    // user_box.replace(8, op.itob(Global.latest_timestamp))
+    global LatestTimestamp
+    itob
+    dig 1
+    intc_1 // 8
+    uncover 2
+    box_replace
+    // contract.py:142
+    // user_box.replace(16, op.itob(UInt64(0)))
+    intc_0 // 0
+    itob
+    dig 1
+    pushint 16
+    dig 2
+    box_replace
+    // contract.py:143
+    // user_box.replace(24, op.itob(UInt64(0)))
+    pushint 24
+    swap
+    box_replace
+    // contract.py:144
+    // self.total_staked += stake_amount
+    intc_0 // 0
+    bytec 4 // "total_staked"
+    app_global_get_ex
+    assert // check self.total_staked exists
+    +
+    bytec 4 // "total_staked"
+    swap
+    app_global_put
+    // contract.py:145
+    // self.total_stakers += UInt64(1)
+    intc_0 // 0
+    bytec 8 // "total_stakers"
+    app_global_get_ex
+    assert // check self.total_stakers exists
+    intc_2 // 1
+    +
+    bytec 8 // "total_stakers"
+    swap
+    app_global_put
+    b stakeTokens_after_if_else@10
+
+
+// contract.FryStaking.unstakeTokens[routing]() -> void:
+unstakeTokens:
+    pushbytes ""
+    dupn 2
+    // contract.py:151
+    // @arc4.abimethod()
+    txna ApplicationArgs 1
+    dup
+    len
+    intc_1 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    btoi
+    dup
+    txna ApplicationArgs 2
+    dup
+    len
+    intc_1 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    btoi
+    swap
+    // contract.py:153
+    // user_box = Box(Bytes, key=Txn.sender.bytes)
+    txn Sender
+    dup
+    cover 2
+    // contract.py:154
+    // assert user_box, "No user found"
+    dup
+    box_len
+    bury 1
+    assert // No user found
+    // contract.py:156
+    // staked = op.btoi(user_box.extract(0, 8))
+    dup
+    intc_0 // 0
+    intc_1 // 8
+    box_extract
+    btoi
+    dup
+    cover 2
+    cover 3
+    // contract.py:157
+    // stake_time = op.btoi(user_box.extract(8, 8))
+    intc_1 // 8
+    dup
+    box_extract
+    btoi
+    cover 2
+    // contract.py:159
+    // assert staked, "No tokens staked"
+    dup
+    assert // No tokens staked
+    // contract.py:160
+    // assert staked >= unstake_amount, "stake & unstake amount do not match"
+    <=
+    assert // stake & unstake amount do not match
+    // contract.py:162-163
+    // # FIX: Enforce lock period with assert (was silent skip)
+    // if self.lock_period:
+    intc_0 // 0
+    bytec_2 // "lock_period"
+    app_global_get_ex
+    assert // check self.lock_period exists
+    bz unstakeTokens_after_if_else@3
+    // contract.py:164
+    // duration_since_stake = Global.latest_timestamp - stake_time
+    global LatestTimestamp
+    dig 1
+    -
+    // contract.py:165
+    // assert duration_since_stake >= self.lock_period, "Lock period has not elapsed"
+    intc_0 // 0
+    bytec_2 // "lock_period"
+    app_global_get_ex
+    assert // check self.lock_period exists
+    >=
+    assert // Lock period has not elapsed
+
+unstakeTokens_after_if_else@3:
+    // contract.py:167-168
+    // # FIX: Cap duration at stake_end_time
+    // effective_end = Global.latest_timestamp
+    global LatestTimestamp
+    bury 8
+    // contract.py:169
+    // if self.stake_end_time:
+    intc_0 // 0
+    bytec_1 // "stake_end_time"
+    app_global_get_ex
+    assert // check self.stake_end_time exists
+    bz unstakeTokens_after_if_else@7
+    // contract.py:170
+    // if Global.latest_timestamp > self.stake_end_time:
+    global LatestTimestamp
+    intc_0 // 0
+    bytec_1 // "stake_end_time"
+    app_global_get_ex
+    assert // check self.stake_end_time exists
+    >
+    bz unstakeTokens_after_if_else@7
+    // contract.py:171
+    // effective_end = self.stake_end_time
+    intc_0 // 0
+    bytec_1 // "stake_end_time"
+    app_global_get_ex
+    swap
+    bury 9
+    assert // check self.stake_end_time exists
+
+unstakeTokens_after_if_else@7:
+    // contract.py:172
+    // duration = effective_end - stake_time
+    dig 7
+    dig 1
+    -
+    // contract.py:174-175
+    // # Calculate reward
+    // reward = _calc_reward(staked, self.apr, duration)
+    intc_0 // 0
+    bytec_3 // "apr"
+    app_global_get_ex
+    assert // check self.apr exists
+    dig 3
+    swap
+    uncover 2
+    callsub _calc_reward
+    dup
+    bury 7
+    // contract.py:176
+    // if reward > self.reward_token_amount:
+    intc_0 // 0
+    bytec_0 // "reward_token_amount"
+    app_global_get_ex
+    assert // check self.reward_token_amount exists
+    >
+    bz unstakeTokens_after_if_else@9
+    // contract.py:177
+    // reward = self.reward_token_amount
+    intc_0 // 0
+    bytec_0 // "reward_token_amount"
+    app_global_get_ex
+    swap
+    bury 7
+    assert // check self.reward_token_amount exists
+
+unstakeTokens_after_if_else@9:
+    // contract.py:179-180
+    // # Send reward if any
+    // if reward:
+    dig 5
+    bz unstakeTokens_after_if_else@12
+    // contract.py:181-186
+    // itxn.AssetTransfer(
+    //     xfer_asset=Asset(self.reward_token),
+    //     asset_receiver=Txn.sender,
+    //     asset_amount=reward,
+    //     fee=0,
+    // ).submit()
+    itxn_begin
+    // contract.py:182
+    // xfer_asset=Asset(self.reward_token),
+    intc_0 // 0
+    bytec 6 // "reward_token"
+    app_global_get_ex
+    assert // check self.reward_token exists
+    // contract.py:183
+    // asset_receiver=Txn.sender,
+    txn Sender
+    dig 7
+    dup
+    cover 3
+    itxn_field AssetAmount
+    itxn_field AssetReceiver
+    itxn_field XferAsset
+    // contract.py:181
+    // itxn.AssetTransfer(
+    intc_3 // axfer
+    itxn_field TypeEnum
+    // contract.py:185
+    // fee=0,
+    intc_0 // 0
+    itxn_field Fee
+    // contract.py:181-186
+    // itxn.AssetTransfer(
+    //     xfer_asset=Asset(self.reward_token),
+    //     asset_receiver=Txn.sender,
+    //     asset_amount=reward,
+    //     fee=0,
+    // ).submit()
+    itxn_submit
+    // contract.py:187
+    // self.reward_token_amount -= reward
+    intc_0 // 0
+    bytec_0 // "reward_token_amount"
+    app_global_get_ex
+    assert // check self.reward_token_amount exists
+    dig 1
+    -
+    bytec_0 // "reward_token_amount"
+    swap
+    app_global_put
+    // contract.py:188
+    // self.rewards_distributed += reward
+    intc_0 // 0
+    bytec 5 // "rewards_distributed"
+    app_global_get_ex
+    assert // check self.rewards_distributed exists
+    dig 1
+    +
+    bytec 5 // "rewards_distributed"
+    swap
+    app_global_put
+    // contract.py:189
+    // prev_claimed = op.btoi(user_box.extract(24, 8))
+    dig 3
+    dup
+    cover 2
+    pushint 24
+    intc_1 // 8
+    box_extract
+    btoi
+    // contract.py:190
+    // user_box.replace(24, op.itob(prev_claimed + reward))
+    +
+    itob
+    pushint 24
+    swap
+    box_replace
+
+unstakeTokens_after_if_else@12:
+    // contract.py:192-198
+    // # Send staked tokens back
+    // itxn.AssetTransfer(
+    //     xfer_asset=Asset(self.stake_token),
+    //     asset_receiver=Txn.sender,
+    //     asset_amount=unstake_amount,
+    //     fee=0,
+    // ).submit()
+    itxn_begin
+    // contract.py:194
+    // xfer_asset=Asset(self.stake_token),
+    intc_0 // 0
+    bytec 7 // "stake_token"
+    app_global_get_ex
+    assert // check self.stake_token exists
+    // contract.py:195
+    // asset_receiver=Txn.sender,
+    txn Sender
+    dig 6
+    itxn_field AssetAmount
+    itxn_field AssetReceiver
+    itxn_field XferAsset
+    // contract.py:192-193
+    // # Send staked tokens back
+    // itxn.AssetTransfer(
+    intc_3 // axfer
+    itxn_field TypeEnum
+    // contract.py:197
+    // fee=0,
+    intc_0 // 0
+    itxn_field Fee
+    // contract.py:192-198
+    // # Send staked tokens back
+    // itxn.AssetTransfer(
+    //     xfer_asset=Asset(self.stake_token),
+    //     asset_receiver=Txn.sender,
+    //     asset_amount=unstake_amount,
+    //     fee=0,
+    // ).submit()
+    itxn_submit
+    // contract.py:200-201
+    // # Check and send pending rewards from auto-claim (box[16:24])
+    // pending = op.btoi(user_box.extract(16, 8))
+    dig 2
+    pushint 16
+    intc_1 // 8
+    box_extract
+    btoi
+    dup
+    bury 8
+    // contract.py:202
+    // if pending:
+    bz unstakeTokens_after_if_else@16
+    // contract.py:203-208
+    // itxn.AssetTransfer(
+    //     xfer_asset=Asset(self.reward_token),
+    //     asset_receiver=Txn.sender,
+    //     asset_amount=pending,
+    //     fee=0,
+    // ).submit()
+    itxn_begin
+    // contract.py:204
+    // xfer_asset=Asset(self.reward_token),
+    intc_0 // 0
+    bytec 6 // "reward_token"
+    app_global_get_ex
+    assert // check self.reward_token exists
+    // contract.py:205
+    // asset_receiver=Txn.sender,
+    txn Sender
+    dig 8
+    itxn_field AssetAmount
+    itxn_field AssetReceiver
+    itxn_field XferAsset
+    // contract.py:203
+    // itxn.AssetTransfer(
+    intc_3 // axfer
+    itxn_field TypeEnum
+    // contract.py:207
+    // fee=0,
+    intc_0 // 0
+    itxn_field Fee
+    // contract.py:203-208
+    // itxn.AssetTransfer(
+    //     xfer_asset=Asset(self.reward_token),
+    //     asset_receiver=Txn.sender,
+    //     asset_amount=pending,
+    //     fee=0,
+    // ).submit()
+    itxn_submit
+    // contract.py:209
+    // user_box.replace(16, op.itob(UInt64(0)))
+    intc_0 // 0
+    itob
+    dig 3
+    pushint 16
+    uncover 2
+    box_replace
+
+unstakeTokens_after_if_else@16:
+    // contract.py:211-212
+    // # Update staked amount
+    // user_box.replace(0, op.itob(staked - unstake_amount))
+    dig 1
+    dig 5
+    dup
+    cover 2
+    -
+    itob
+    dig 4
+    intc_0 // 0
+    uncover 2
+    box_replace
+    // contract.py:213
+    // self.total_staked -= unstake_amount
+    intc_0 // 0
+    bytec 4 // "total_staked"
+    app_global_get_ex
+    assert // check self.total_staked exists
+    swap
+    -
+    bytec 4 // "total_staked"
+    swap
+    app_global_put
+    // contract.py:214
+    // self.apr = updated_apr
+    bytec_3 // "apr"
+    dig 4
+    app_global_put
+    // contract.py:151
+    // @arc4.abimethod()
+    intc_2 // 1
+    return
+
+
+// contract.FryStaking.claimTokens[routing]() -> void:
+claimTokens:
+    pushbytes ""
+    dupn 2
+    // contract.py:218
+    // @arc4.abimethod()
+    txna ApplicationArgs 1
+    dup
+    len
+    intc_1 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    btoi
+    // contract.py:220
+    // user_box = Box(Bytes, key=Txn.sender.bytes)
+    txn Sender
+    // contract.py:220-221
+    // user_box = Box(Bytes, key=Txn.sender.bytes)
+    // assert user_box, "No tokens staked"
+    dupn 2
+    // contract.py:221
+    // assert user_box, "No tokens staked"
+    box_len
+    bury 1
+    assert // No tokens staked
+    // contract.py:223
+    // stake_time = op.btoi(user_box.extract(8, 8))
+    dup
+    intc_1 // 8
+    dup
+    box_extract
+    btoi
+    swap
+    // contract.py:224
+    // staked = op.btoi(user_box.extract(0, 8))
+    intc_0 // 0
+    intc_1 // 8
+    box_extract
+    btoi
+    dup
+    // contract.py:225
+    // assert staked, "No tokens staked"
+    assert // No tokens staked
+    // contract.py:227-228
+    // # FIX: Enforce lock period with assert (was silent skip)
+    // if self.lock_period:
+    intc_0 // 0
+    bytec_2 // "lock_period"
+    app_global_get_ex
+    assert // check self.lock_period exists
+    bz claimTokens_after_if_else@3
+    // contract.py:229
+    // duration_since_stake = Global.latest_timestamp - stake_time
+    global LatestTimestamp
+    dig 2
+    -
+    // contract.py:230
+    // assert duration_since_stake >= self.lock_period, "Lock period has not elapsed"
+    intc_0 // 0
+    bytec_2 // "lock_period"
+    app_global_get_ex
+    assert // check self.lock_period exists
+    >=
+    assert // Lock period has not elapsed
+
+claimTokens_after_if_else@3:
+    // contract.py:232-233
+    // # FIX: Cap duration at stake_end_time
+    // effective_end = Global.latest_timestamp
+    global LatestTimestamp
+    bury 7
+    // contract.py:234
+    // if self.stake_end_time:
+    intc_0 // 0
+    bytec_1 // "stake_end_time"
+    app_global_get_ex
+    assert // check self.stake_end_time exists
+    bz claimTokens_after_if_else@7
+    // contract.py:235
+    // if Global.latest_timestamp > self.stake_end_time:
+    global LatestTimestamp
+    intc_0 // 0
+    bytec_1 // "stake_end_time"
+    app_global_get_ex
+    assert // check self.stake_end_time exists
+    >
+    bz claimTokens_after_if_else@7
+    // contract.py:236
+    // effective_end = self.stake_end_time
+    intc_0 // 0
+    bytec_1 // "stake_end_time"
+    app_global_get_ex
+    swap
+    bury 8
+    assert // check self.stake_end_time exists
+
+claimTokens_after_if_else@7:
+    // contract.py:237
+    // duration = effective_end - stake_time
+    dig 6
+    dig 2
+    -
+    // contract.py:239-240
+    // # Calculate reward using fixed 128-bit formula
+    // reward = _calc_reward(staked, self.apr, duration)
+    intc_0 // 0
+    bytec_3 // "apr"
+    app_global_get_ex
+    assert // check self.apr exists
+    dig 2
+    swap
+    uncover 2
+    callsub _calc_reward
+    dup
+    bury 6
+    // contract.py:241
+    // if reward > self.reward_token_amount:
+    intc_0 // 0
+    bytec_0 // "reward_token_amount"
+    app_global_get_ex
+    assert // check self.reward_token_amount exists
+    >
+    bz claimTokens_after_if_else@9
+    // contract.py:242
+    // reward = self.reward_token_amount
+    intc_0 // 0
+    bytec_0 // "reward_token_amount"
+    app_global_get_ex
+    swap
+    bury 6
+    assert // check self.reward_token_amount exists
+
+claimTokens_after_if_else@9:
+    // contract.py:244-245
+    // # Send reward if any
+    // if reward:
+    dig 4
+    bz claimTokens_after_if_else@12
+    // contract.py:246-251
+    // itxn.AssetTransfer(
+    //     xfer_asset=Asset(self.reward_token),
+    //     asset_receiver=Txn.sender,
+    //     asset_amount=reward,
+    //     fee=0,
+    // ).submit()
+    itxn_begin
+    // contract.py:247
+    // xfer_asset=Asset(self.reward_token),
+    intc_0 // 0
+    bytec 6 // "reward_token"
+    app_global_get_ex
+    assert // check self.reward_token exists
+    // contract.py:248
+    // asset_receiver=Txn.sender,
+    txn Sender
+    dig 6
+    dup
+    cover 3
+    itxn_field AssetAmount
+    itxn_field AssetReceiver
+    itxn_field XferAsset
+    // contract.py:246
+    // itxn.AssetTransfer(
+    intc_3 // axfer
+    itxn_field TypeEnum
+    // contract.py:250
+    // fee=0,
+    intc_0 // 0
+    itxn_field Fee
+    // contract.py:246-251
+    // itxn.AssetTransfer(
+    //     xfer_asset=Asset(self.reward_token),
+    //     asset_receiver=Txn.sender,
+    //     asset_amount=reward,
+    //     fee=0,
+    // ).submit()
+    itxn_submit
+    // contract.py:252
+    // self.reward_token_amount -= reward
+    intc_0 // 0
+    bytec_0 // "reward_token_amount"
+    app_global_get_ex
+    assert // check self.reward_token_amount exists
+    dig 1
+    -
+    bytec_0 // "reward_token_amount"
+    swap
+    app_global_put
+    // contract.py:253
+    // self.rewards_distributed += reward
+    intc_0 // 0
+    bytec 5 // "rewards_distributed"
+    app_global_get_ex
+    assert // check self.rewards_distributed exists
+    dig 1
+    +
+    bytec 5 // "rewards_distributed"
+    swap
+    app_global_put
+    // contract.py:254
+    // prev_claimed = op.btoi(user_box.extract(24, 8))
+    dig 3
+    dup
+    cover 2
+    pushint 24
+    intc_1 // 8
+    box_extract
+    btoi
+    // contract.py:255
+    // user_box.replace(24, op.itob(prev_claimed + reward))
+    +
+    itob
+    dig 1
+    pushint 24
+    uncover 2
+    box_replace
+    // contract.py:256-257
+    // # FIX: Reset stake time ONLY when reward is actually sent (was unconditional)
+    // user_box.replace(8, op.itob(Global.latest_timestamp))
+    global LatestTimestamp
+    itob
+    intc_1 // 8
+    swap
+    box_replace
+
+claimTokens_after_if_else@12:
+    // contract.py:259-260
+    // # Check and send pending rewards from auto-claim (box[16:24])
+    // pending = op.btoi(user_box.extract(16, 8))
+    dig 2
+    pushint 16
+    intc_1 // 8
+    box_extract
+    btoi
+    dup
+    bury 7
+    // contract.py:261
+    // if pending:
+    bz claimTokens_after_if_else@15
+    // contract.py:262-267
+    // itxn.AssetTransfer(
+    //     xfer_asset=Asset(self.reward_token),
+    //     asset_receiver=Txn.sender,
+    //     asset_amount=pending,
+    //     fee=0,
+    // ).submit()
+    itxn_begin
+    // contract.py:263
+    // xfer_asset=Asset(self.reward_token),
+    intc_0 // 0
+    bytec 6 // "reward_token"
+    app_global_get_ex
+    assert // check self.reward_token exists
+    // contract.py:264
+    // asset_receiver=Txn.sender,
+    txn Sender
+    dig 7
+    itxn_field AssetAmount
+    itxn_field AssetReceiver
+    itxn_field XferAsset
+    // contract.py:262
+    // itxn.AssetTransfer(
+    intc_3 // axfer
+    itxn_field TypeEnum
+    // contract.py:266
+    // fee=0,
+    intc_0 // 0
+    itxn_field Fee
+    // contract.py:262-267
+    // itxn.AssetTransfer(
+    //     xfer_asset=Asset(self.reward_token),
+    //     asset_receiver=Txn.sender,
+    //     asset_amount=pending,
+    //     fee=0,
+    // ).submit()
+    itxn_submit
+    // contract.py:268
+    // user_box.replace(16, op.itob(UInt64(0)))
+    intc_0 // 0
+    itob
+    dig 3
+    pushint 16
+    uncover 2
+    box_replace
+
+claimTokens_after_if_else@15:
+    // contract.py:270
+    // self.apr = updated_apr
+    bytec_3 // "apr"
+    dig 4
+    app_global_put
+    // contract.py:218
+    // @arc4.abimethod()
+    intc_2 // 1
+    return
+
+
+// contract.FryStaking.compound[routing]() -> void:
+compound:
+    pushbytes ""
+    dup
+    // contract.py:274
+    // @arc4.abimethod()
+    txna ApplicationArgs 1
+    dup
+    len
+    intc_1 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    btoi
+    // contract.py:276
+    // user_box = Box(Bytes, key=Txn.sender.bytes)
+    txn Sender
+    // contract.py:276-277
+    // user_box = Box(Bytes, key=Txn.sender.bytes)
+    // assert user_box, "No tokens staked"
+    dupn 2
+    // contract.py:277
+    // assert user_box, "No tokens staked"
+    box_len
+    bury 1
+    assert // No tokens staked
+    // contract.py:279
+    // stake_time = op.btoi(user_box.extract(8, 8))
+    dup
+    intc_1 // 8
+    dup
+    box_extract
+    btoi
+    swap
+    // contract.py:280
+    // staked = op.btoi(user_box.extract(0, 8))
+    intc_0 // 0
+    intc_1 // 8
+    box_extract
+    btoi
+    dup
+    // contract.py:281
+    // assert staked, "No tokens staked"
+    assert // No tokens staked
+    // contract.py:283-284
+    // # FIX: Enforce lock period
+    // if self.lock_period:
+    intc_0 // 0
+    bytec_2 // "lock_period"
+    app_global_get_ex
+    assert // check self.lock_period exists
+    bz compound_after_if_else@3
+    // contract.py:285
+    // duration_since_stake = Global.latest_timestamp - stake_time
+    global LatestTimestamp
+    dig 2
+    -
+    // contract.py:286
+    // assert duration_since_stake >= self.lock_period, "Lock period has not elapsed"
+    intc_0 // 0
+    bytec_2 // "lock_period"
+    app_global_get_ex
+    assert // check self.lock_period exists
+    >=
+    assert // Lock period has not elapsed
+
+compound_after_if_else@3:
+    // contract.py:288-289
+    // # FIX: Cap duration at stake_end_time
+    // effective_end = Global.latest_timestamp
+    global LatestTimestamp
+    bury 6
+    // contract.py:290
+    // if self.stake_end_time:
+    intc_0 // 0
+    bytec_1 // "stake_end_time"
+    app_global_get_ex
+    assert // check self.stake_end_time exists
+    bz compound_after_if_else@7
+    // contract.py:291
+    // if Global.latest_timestamp > self.stake_end_time:
+    global LatestTimestamp
+    intc_0 // 0
+    bytec_1 // "stake_end_time"
+    app_global_get_ex
+    assert // check self.stake_end_time exists
+    >
+    bz compound_after_if_else@7
+    // contract.py:292
+    // effective_end = self.stake_end_time
+    intc_0 // 0
+    bytec_1 // "stake_end_time"
+    app_global_get_ex
+    swap
+    bury 7
+    assert // check self.stake_end_time exists
+
+compound_after_if_else@7:
+    // contract.py:293
+    // duration = effective_end - stake_time
+    dig 5
+    dig 2
+    -
+    // contract.py:295-296
+    // # Calculate reward
+    // reward = _calc_reward(staked, self.apr, duration)
+    intc_0 // 0
+    bytec_3 // "apr"
+    app_global_get_ex
+    assert // check self.apr exists
+    dig 2
+    swap
+    uncover 2
+    callsub _calc_reward
+    dup
+    bury 6
+    // contract.py:297-298
+    // # FIX: Cap reward at remaining pool balance
+    // if reward > self.reward_token_amount:
+    intc_0 // 0
+    bytec_0 // "reward_token_amount"
+    app_global_get_ex
+    assert // check self.reward_token_amount exists
+    >
+    bz compound_after_if_else@9
+    // contract.py:299
+    // reward = self.reward_token_amount
+    intc_0 // 0
+    bytec_0 // "reward_token_amount"
+    app_global_get_ex
+    swap
+    bury 6
+    assert // check self.reward_token_amount exists
+
+compound_after_if_else@9:
+    // contract.py:301
+    // if reward:
+    dig 4
+    bz compound_after_if_else@11
+    // contract.py:302-303
+    // # FIX: Deduct from pool and track (was missing — caused unbalanced accounting)
+    // self.reward_token_amount -= reward
+    intc_0 // 0
+    bytec_0 // "reward_token_amount"
+    app_global_get_ex
+    assert // check self.reward_token_amount exists
+    dig 5
+    dup
+    cover 2
+    -
+    bytec_0 // "reward_token_amount"
+    swap
+    app_global_put
+    // contract.py:304
+    // self.rewards_distributed += reward
+    intc_0 // 0
+    bytec 5 // "rewards_distributed"
+    app_global_get_ex
+    assert // check self.rewards_distributed exists
+    dig 1
+    +
+    bytec 5 // "rewards_distributed"
+    swap
+    app_global_put
+    // contract.py:305-306
+    // # Add reward to staked amount (compound effect)
+    // user_box.replace(0, op.itob(staked + reward))
+    dup2
+    +
+    itob
+    dig 4
+    dup
+    cover 2
+    intc_0 // 0
+    uncover 2
+    box_replace
+    // contract.py:307-308
+    // # FIX: Reset stake_time (was missing — reward window never closed)
+    // user_box.replace(8, op.itob(Global.latest_timestamp))
+    global LatestTimestamp
+    itob
+    dig 1
+    intc_1 // 8
+    uncover 2
+    box_replace
+    // contract.py:309-310
+    // # Track in cumulative claimed
+    // prev_claimed = op.btoi(user_box.extract(24, 8))
+    dup
+    pushint 24
+    intc_1 // 8
+    box_extract
+    btoi
+    // contract.py:311
+    // user_box.replace(24, op.itob(prev_claimed + reward))
+    uncover 2
+    +
+    itob
+    pushint 24
+    swap
+    box_replace
+
+compound_after_if_else@11:
+    // contract.py:313
+    // self.apr = updated_apr
+    bytec_3 // "apr"
+    dig 4
+    app_global_put
+    // contract.py:274
+    // @arc4.abimethod()
+    intc_2 // 1
+    return

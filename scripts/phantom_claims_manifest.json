@@ -1,0 +1,117 @@
+{
+  "generatedAt": "2026-03-13T22:05:55.258Z",
+  "totalRefunds": 9,
+  "totalFryMicro": 46450287,
+  "totalFryHuman": 46.450287,
+  "uniqueWallets": 6,
+  "phantomClaims": [
+    {
+      "wallet": "HQK4C6ZTG6PRHCCPQE26TLASZMQNHPGCFTK36D6KEIBVSB2YLP6UFO5UOQ",
+      "poolAppId": 3465579498,
+      "poolName": "Fry -> Fry",
+      "claimTxId": "MG3LLLMXFLIB2B24TAMIXVEATEXQYJPENS2L4SCRC3A2YTLAO4NQ",
+      "claimRound": 59056643,
+      "claimTime": "2026-03-08T03:37:45.000Z",
+      "feeTxId": "LQSJEMUGKWWFP4GPUQTDCCRCBJBG475TIPRK5NEVCUL6XUEDKIUA",
+      "feeAmountMicro": 915,
+      "feeAmountHuman": 0.000915,
+      "source": "onchain"
+    },
+    {
+      "wallet": "XETLSDPESZHWVAVWWQLZPS5T65UBBIRVGRN4SMRNWSYBFH5BPPLGUWPF4Q",
+      "poolAppId": 3465579498,
+      "poolName": "Fry -> Fry",
+      "claimTxId": "YWHVFRAKW7XAPDLH4PXRHHHSGGNQB57QMQR4WSVSWA4MSSBVTFLQ",
+      "claimRound": 59062870,
+      "claimTime": "2026-03-08T08:25:03.000Z",
+      "feeTxId": "RQXPENNJGHJ55W3C2CFSP4PLMHGU6XL7ICVD6FRUTO3BNYEBTHOQ",
+      "feeAmountMicro": 1253940,
+      "feeAmountHuman": 1.25394,
+      "source": "onchain"
+    },
+    {
+      "wallet": "D7F477557T66ZLSXNMKC4LMP7S3UK66AAE4MKM7Y57D57HDIALKMVVGBGY",
+      "poolAppId": 3465579498,
+      "poolName": "Fry -> Fry",
+      "claimTxId": "J3QHCUP3D3GO4IYYPGGQNL32IJZ6SSYGGL7YIDU2NT7OPL7XX4HA",
+      "claimRound": 59067564,
+      "claimTime": "2026-03-08T12:00:39.000Z",
+      "feeTxId": "RBBM3DKUOMX3OFJKHPTTWJMGZ5K6WIVJLHD4VLQ4OUYRWMYLG7TA",
+      "feeAmountMicro": 141336,
+      "feeAmountHuman": 0.141336,
+      "source": "onchain"
+    },
+    {
+      "wallet": "WFOELFUQR23P7UFASKNAGYQKLUAV7CVPGDO2TXSBOSHEIKJR4VYMEJ73XE",
+      "poolAppId": 3465579498,
+      "poolName": "Fry -> Fry",
+      "claimTxId": "3XMEO7VDPPTDWFWOOXSWX56ZQY4YRVR3K766KXBUXJYC6D4EUNVQ",
+      "claimRound": 59071665,
+      "claimTime": "2026-03-08T15:09:05.000Z",
+      "feeTxId": "URHHENLC4TFBO4C5WY3EXUJPDSAMI5JLVKGXZMSLIOYMUBR5IUJQ",
+      "feeAmountMicro": 52148,
+      "feeAmountHuman": 0.052148,
+      "source": "onchain"
+    },
+    {
+      "wallet": "XETLSDPESZHWVAVWWQLZPS5T65UBBIRVGRN4SMRNWSYBFH5BPPLGUWPF4Q",
+      "poolAppId": 3468848937,
+      "poolName": "USD Coin -> Fry",
+      "claimTxId": "UIZVZ7E2CBEO4QBRQFVTGW26PHOSQ5AIKX47WNVUR5Z3MXAZNUSA",
+      "claimRound": 59185416,
+      "claimTime": "2026-03-12T06:14:40.000Z",
+      "feeTxId": "FCGRB5I2RRC3AGABYV27I35XVIYXCVMJZ73L3JLJA3SR4T7G4ZMQ",
+      "feeAmountMicro": 8889226,
+      "feeAmountHuman": 8.889226,
+      "source": "onchain"
+    },
+    {
+      "wallet": "SAF4L4OSPL6NNHYLTALHSTAB47DEDOA7JEIAODD2N7WSNIA6SZ4XVOLUIQ",
+      "poolAppId": 3468848937,
+      "poolName": "USD Coin -> Fry",
+      "claimTxId": "X6FC5KPBF7Y6Q545ZTPS2BOCMBQKGJ3UBZKLIJODF4Q5D33QV3DA",
+      "claimRound": 59197621,
+      "claimTime": "2026-03-12T15:33:50.000Z",
+      "feeTxId": "2WG3JXROUVHKPM7KMXGWG4PKRUFPACOICNLSKQ7D72IYBIC7P5KA",
+      "feeAmountMicro": 4724316,
+      "feeAmountHuman": 4.724316,
+      "source": "onchain"
+    },
+    {
+      "wallet": "HQK4C6ZTG6PRHCCPQE26TLASZMQNHPGCFTK36D6KEIBVSB2YLP6UFO5UOQ",
+      "poolAppId": 3468848937,
+      "poolName": "USD Coin -> Fry",
+      "claimTxId": "E4HZIFJS5PMPPB3KIOOPFFEICPNENAKYPBBXPPAP57FDINQCRIMQ",
+      "claimRound": 59200591,
+      "claimTime": "2026-03-12T17:49:48.000Z",
+      "feeTxId": "N3CXJSLPRYB4M6GG666FH6TESPUAYW6UYSOWOMLRYH7MDLJWUVAA",
+      "feeAmountMicro": 5030721,
+      "feeAmountHuman": 5.030721,
+      "source": "onchain"
+    },
+    {
+      "wallet": "D7F477557T66ZLSXNMKC4LMP7S3UK66AAE4MKM7Y57D57HDIALKMVVGBGY",
+      "poolAppId": 3468848937,
+      "poolName": "USD Coin -> Fry",
+      "claimTxId": "QSAXZ33VRH4VVKG76IZ3DHXBXDYZTWBQYFBPNV6QJM6RH5ZN5OGA",
+      "claimRound": 59203772,
+      "claimTime": "2026-03-12T20:15:56.000Z",
+      "feeTxId": "MIFKF274NXWPOQBTGIQPILPOW6HSQSDITG3XXIF7EESARMGUN64A",
+      "feeAmountMicro": 7895858,
+      "feeAmountHuman": 7.895858,
+      "source": "onchain"
+    },
+    {
+      "wallet": "K6YAELU4EETZFETOWWMGJJALOTRD2KQ4EHMDSCKMEF5AIKFU4VCMXY3BGQ",
+      "poolAppId": 3469720617,
+      "poolName": "Fry -> Fry",
+      "claimTxId": "3MG4MBKHH2QLTWMHJ2Z3KQIONYIIGCW6UBMBRUZ76Y2AHTYNZIKA",
+      "claimRound": 59196811,
+      "claimTime": "2026-03-12T14:56:43.000Z",
+      "feeTxId": "V3OPQBTT5J47SRFD6LUXRCQXI2LWVNPCHWFRZ5RRKKADKFWKRVCQ",
+      "feeAmountMicro": 18461827,
+      "feeAmountHuman": 18.461827,
+      "source": "onchain"
+    }
+  ]
+}

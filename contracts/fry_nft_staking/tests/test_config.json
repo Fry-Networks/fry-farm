@@ -1,0 +1,18 @@
+{
+  "network": "testnet",
+  "algodServer": "https://testnet-api.4160.nodely.dev",
+  "algodPort": 443,
+  "algodToken": "",
+  "creator": {
+    "addr": "AMHN4OLQYLTLSU4YHO7WOPS4VULXLGW2Z6CT57D6PTL2PO6NZKGZZ422WQ",
+    "mnemonic": "dad prison stove ancient merit twist toe north pole attend amount aunt useful endorse life expire merge rug solution alcohol helmet motor develop about obtain"
+  },
+  "staker": {
+    "addr": "M55FRZYXDBYHQBHDX4UBZZ4MXT4SDEHXNEC5T74YYS7JRJUVOMHOVJBBR4",
+    "mnemonic": "tell uniform height daring boat usual minor donkey couple sunny hockey daughter skull fruit advice post mail garage abuse alcohol panic quarter depend above process"
+  },
+  "nft1Id": 756924431,
+  "nft2Id": 756924441,
+  "funded": true,
+  "collection_creator": "WYSXA7AJGSAUFSCI7UD7YZTZ2C44XKGSRE7DE5KRU4F7QMAPXPDT556SDA"
+}
