@@ -40,6 +40,16 @@ export ANTHROPIC_API_KEY=$(op read "op://FryFarm/Anthropic API Key/qmwlmh5rknvyi
 export ATLAS00_VOI_ALGOD_TOKEN=$(op read "op://FryFarm/ATLAS00 Voi Algod Token/ALGOD_TOKEN" | xargs)
 [ -z "$ATLAS00_VOI_ALGOD_TOKEN" ] && echo "FATAL: ATLAS00_VOI_ALGOD_TOKEN is empty — op read failed" >&2 && exit 1
 
+# 7. GitHub OAuth for bug report file access
+export GITHUB_CLIENT_ID=$(op read "op://FryFarm/Bug Report GitHub Auth/GITHUB_CLIENT_ID" | xargs)
+[ -z "$GITHUB_CLIENT_ID" ] && echo "FATAL: GITHUB_CLIENT_ID is empty — op read failed" >&2 && exit 1
+export GITHUB_CLIENT_SECRET=$(op read "op://FryFarm/Bug Report GitHub Auth/GITHUB_CLIENT_SECRET" | xargs)
+[ -z "$GITHUB_CLIENT_SECRET" ] && echo "FATAL: GITHUB_CLIENT_SECRET is empty — op read failed" >&2 && exit 1
+export GITHUB_ALLOWED_USER_ID=$(op read "op://FryFarm/Bug Report GitHub Auth/GITHUB_ALLOWED_USER_ID" | xargs)
+[ -z "$GITHUB_ALLOWED_USER_ID" ] && echo "FATAL: GITHUB_ALLOWED_USER_ID is empty — op read failed" >&2 && exit 1
+export GITHUB_COOKIE_SECRET=$(op read "op://FryFarm/Bug Report GitHub Auth/GITHUB_COOKIE_SECRET" | xargs)
+[ -z "$GITHUB_COOKIE_SECRET" ] && echo "FATAL: GITHUB_COOKIE_SECRET is empty — op read failed" >&2 && exit 1
+
 cd /opt/fry-farm
 docker compose build backend
 docker compose up -d --force-recreate backend
