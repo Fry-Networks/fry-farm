@@ -50,6 +50,10 @@ export GITHUB_ALLOWED_USER_ID=$(op read "op://FryFarm/Bug Report GitHub Auth/GIT
 export GITHUB_COOKIE_SECRET=$(op read "op://FryFarm/Bug Report GitHub Auth/GITHUB_COOKIE_SECRET" | xargs)
 [ -z "$GITHUB_COOKIE_SECRET" ] && echo "FATAL: GITHUB_COOKIE_SECRET is empty — op read failed" >&2 && exit 1
 
+# 8. EventVesting caller encryption key
+export EVENT_CALLER_MASTER_KEY=$(op read "op://FryFarm/EventVesting/master_encryption_key" | xargs)
+[ -z "$EVENT_CALLER_MASTER_KEY" ] && echo "FATAL: EVENT_CALLER_MASTER_KEY is empty -- op read failed" >&2 && exit 1
+
 cd /opt/fry-farm
 docker compose build backend
 docker compose up -d --force-recreate backend
