@@ -1,6 +1,0 @@
-#!/opt/fry-farm/contracts/.venv/bin/python3
-import sys
-from algokit.cli import algokit
-if __name__ == '__main__':
-    sys.argv[0] = sys.argv[0].removesuffix('.exe')
-    sys.exit(algokit())
