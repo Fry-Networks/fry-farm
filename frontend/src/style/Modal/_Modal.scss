@@ -1,0 +1,21 @@
+.ant-modal-footer {
+  display: none;
+}
+.ant-modal-content {
+  border-radius: 25px !important;
+  background: var(--modal-bg) !important;
+  box-shadow: 0px 4px 24.2px 0px var(--shadow-color) !important;
+  padding: 0px !important;
+}
+.ant-modal-close {
+  color: var(--text-primary) !important;
+  &:hover {
+    background: transparent !important;
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  .del-modal {
+    width: 93% !important;
+  }
+}

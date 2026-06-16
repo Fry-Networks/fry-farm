@@ -1,0 +1,17 @@
+// base style
+@use './base/reset';
+@use './base/font';
+@use './base/typography';
+@use './base/tailwindConfig';
+
+// components
+@use './components/button';
+@use './components/input';
+@use './components/table';
+
+// pages
+@use './pages/home';
+@use './pages/dashboard';
+
+// modal
+@use './Modal/Modal';

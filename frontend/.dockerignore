@@ -1,0 +1,10 @@
+.env
+.env.*
+.git
+node_modules
+*.bak
+*.bak.*
+npm-debug.log*
+.idea
+dist
+build

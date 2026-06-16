@@ -1,0 +1,428 @@
+import { Icon } from '@iconify/react'
+import { Drawer } from 'antd'
+import { useEffect, useRef, useState } from 'react'
+import { NavLink, useLocation, useNavigate } from 'react-router-dom'
+import ConnectWallet from '../ConnectWallet'
+import Button from '../shared/button'
+import ThemeToggle from '../shared/ThemeToggle'
+import Transact from '../Transact'
+import { useTheme } from '../../contexts/ThemeContext'
+import DailyRewardsModal from '../../Modals/website/DailyRewardsModal'
+import BugReportModal from '../../Modals/website/bugReportModal'
+import { fetchRewardsStatus } from '../../services/rewardsApi'
+import { fetchActiveEvents } from '../../services/eventService'
+import BetaBanner from '../shared/BetaBanner'
+import ChainSelector from '../ChainSelector'
+import { useChain } from '../../context/ChainContext'
+import { useMultiChainWallet } from '../../hooks/useMultiChainWallet'
+
+const Navbar: React.FC = () => {
+  const { isDark } = useTheme();
+  const [isOpen, setIsOpen] = useState(false)
+  const [open, setOpen] = useState<boolean>(false)
+  const [walletConnected, setWalletConnected] = useState(false)
+  const navigate = useNavigate()
+  const dropdownRef = useRef<HTMLDivElement>(null)
+  const [placement] = useState<'left'>('left')
+  const [openWalletModal, setOpenWalletModal] = useState<boolean>(false);
+  const [openDemoModal, setOpenDemoModal] = useState<boolean>(false);
+  const [openRewardsModal, setOpenRewardsModal] = useState(false)
+  const [isBugReportOpen, setIsBugReportOpen] = useState(false)
+  const [rewardsAvailable, setRewardsAvailable] = useState(false)
+  const [hasActiveEvents, setHasActiveEvents] = useState(false)
+  const { activeAddress } = useMultiChainWallet();
+  const { chainId: activeChainId, hasFeature } = useChain();
+  const isAlgorand = activeChainId === 'algorand-mainnet';
+  const location = useLocation()
+  const isStakeActive = location.pathname === '/staking' || location.pathname.startsWith('/staking')
+  const isFarmActive = location.pathname === '/lp-farm' || location.pathname.startsWith('/lp-farm')
+  const isP2PActive = location.pathname === '/p2p' || location.pathname.startsWith('/p2p/')
+  const isDeFiActive = location.pathname === '/' || isStakeActive || isFarmActive || isP2PActive
+  const isLaunchpadActive = location.pathname === '/launches' || location.pathname.startsWith('/launches/')
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
+
+  // Listen for openDailyRewards event from FeeConfirmation/FryFeeBanner
+  useEffect(() => {
+    const handler = () => { if (isAlgorand) setOpenRewardsModal(true) }
+    window.addEventListener('openDailyRewards', handler)
+    return () => window.removeEventListener('openDailyRewards', handler)
+  }, [isAlgorand])
+
+  // Listen for openConnectWallet event from stake/withdraw modals
+  useEffect(() => {
+    const handler = () => setOpenWalletModal(true)
+    window.addEventListener('openConnectWallet', handler)
+    return () => window.removeEventListener('openConnectWallet', handler)
+  }, [])
+
+  // Events notification badge
+  useEffect(() => {
+    fetchActiveEvents()
+      .then(events => setHasActiveEvents(events.length > 0))
+      .catch(() => {})
+  }, [])
+
+  // Rewards notification dot (Algorand only — no rewards on Voi)
+  useEffect(() => {
+    if (!activeAddress) {
+      setRewardsAvailable(false)
+      return
+    }
+    if (!isAlgorand) return
+    fetchRewardsStatus(activeAddress)
+      .then((s) => {
+        setRewardsAvailable(s.canClaim)
+      })
+      .catch(() => {})
+  }, [activeAddress])
+
+  const toggleDropdown = () => setIsOpen((prev) => !prev)
+
+  const showDrawer = () => setOpen(true)
+  const onClose = () => setOpen(false)
+
+  const toggleWalletModal = () => {
+    setOpenWalletModal(!openWalletModal);
+    onClose()
+  }
+
+  return (
+    <>
+      <nav className="max-md:hidden max-xxxl:w-[95%] w-[80%] relative z-[4] m-auto pt-[27px]">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center">
+            <NavLink to="/">
+              <img src={isDark ? "/assets/images/logo_dark.png" : "/assets/images/logo_light.png"} alt="Logo" className="h-[97px] object-contain" />
+            </NavLink>
+          </div>
+
+          <ul className="md:flex space-x-10 max-xxl:space-x-5 max-xxxl:space-x-3 min-w-0">
+            <li className="relative group uppercase large text-[var(--text-primary)] font-bold font-apex">
+              <span className={`cursor-pointer p-[10px] uppercase ${
+                isDeFiActive ? 'text-secondary border-solid border-b-2 border-[#DE0308]' : ''
+              }`}>
+                DeFi
+                <Icon icon="mdi:chevron-down" className="w-4 h-4 inline-block ml-1 align-middle" />
+              </span>
+              <ul className="absolute hidden group-hover:block bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-md shadow-lg min-w-[160px] z-50 top-full left-0">
+                <li>
+                  <NavLink to="/" className={({ isActive }) =>
+                    `block px-4 py-2 text-sm font-bold hover:bg-[var(--bg-secondary)] ${isActive ? 'text-secondary' : 'text-[var(--text-primary)]'}`
+                  }>Swap</NavLink>
+                </li>
+                <li>
+                  <NavLink to="/staking" className={({ isActive }) =>
+                    `block px-4 py-2 text-sm font-bold hover:bg-[var(--bg-secondary)] ${isActive ? 'text-secondary' : 'text-[var(--text-primary)]'}`
+                  }>Staking</NavLink>
+                </li>
+                <li>
+                  <NavLink to="/lp-farm" className={({ isActive }) =>
+                    `block px-4 py-2 text-sm font-bold hover:bg-[var(--bg-secondary)] ${isActive ? 'text-secondary' : 'text-[var(--text-primary)]'}`
+                  }>LP Farm</NavLink>
+                </li>
+                {hasFeature('p2pSwap') && (
+                <li>
+                  <NavLink to="/p2p" className={({ isActive }) =>
+                    `block px-4 py-2 text-sm font-bold hover:bg-[var(--bg-secondary)] ${isActive || location.pathname.startsWith('/p2p/') ? 'text-secondary' : 'text-[var(--text-primary)]'}`
+                  }>P2P</NavLink>
+                </li>
+                )}
+              </ul>
+            </li>
+
+            {hasFeature('launches') && (
+            <li className="uppercase large text-[var(--text-primary)] font-bold font-apex">
+              <NavLink
+                to="/launches"
+                className={({ isActive }) =>
+                  `cursor-pointer p-[10px] uppercase ${isActive || location.pathname.startsWith('/launches/') ? 'text-secondary border-solid border-b-2 border-[#DE0308]' : ''}`
+                }
+              >
+                Launches
+              </NavLink>
+            </li>
+            )}
+
+
+            <li className="uppercase large text-[var(--text-primary)] font-bold font-apex">
+              <NavLink
+                to="/genesis-mint"
+                className={({ isActive }) =>
+                  `cursor-pointer p-[10px] uppercase ${isActive ? 'text-secondary border-solid border-b-2 border-[#DE0308]' : ''}`
+                }
+              >
+                Genesis
+              </NavLink>
+            </li>
+
+
+            <li className="uppercase large text-[var(--text-primary)] font-bold font-apex">
+              <NavLink
+                to="/events"
+                className={({ isActive }) =>
+                  `cursor-pointer p-[10px] uppercase relative ${isActive ? 'text-secondary border-solid border-b-2 border-[#DE0308]' : ''}`
+                }
+              >
+                Events
+                {hasActiveEvents && (
+                  <span className="absolute -top-1 -right-2 w-[8px] h-[8px] bg-[#DE0308] rounded-full" />
+                )}
+              </NavLink>
+            </li>
+
+            <li className="uppercase large text-[var(--text-primary)] font-bold font-apex">
+              <NavLink
+                to="/profile"
+                className={({ isActive }) =>
+                  `cursor-pointer p-[10px] uppercase ${isActive ? 'text-secondary border-solid border-b-2 border-[#DE0308]' : ''}`
+                }
+              >
+                Profile
+              </NavLink>
+            </li>
+          </ul>
+
+          <div className="button flex items-center gap-2 shrink-0">
+            <ChainSelector />
+            <ThemeToggle />
+            <div
+              className="cursor-pointer opacity-60 hover:opacity-100 transition-opacity"
+              onClick={() => setIsBugReportOpen(true)}
+              title="Report a Bug"
+            >
+              <Icon icon="mdi:bug-outline" width={22} color="var(--text-primary)" />
+            </div>
+            {isAlgorand && activeAddress && (
+              <div className="relative cursor-pointer" onClick={() => setOpenRewardsModal(true)}>
+                <Icon icon="mdi:gift" width={24} color="#FD0000" />
+                {rewardsAvailable && (
+                  <span className="absolute -top-1 -right-1 w-[10px] h-[10px] bg-green rounded-full" />
+                )}
+              </div>
+            )}
+            {!activeAddress ? (
+              <Button
+                text="Connect Wallet"
+                className="button btn-primary"
+                height={53}
+                width={186}
+                onClick={() => toggleWalletModal()}
+              />
+            ) : (
+              <div ref={dropdownRef} className="relative inline-block text-left" onClick={() => toggleWalletModal()} >
+                <div
+                  className="flex items-center justify-center gap-[10px] cursor-pointer w-[186px] max-xxl:w-[150px] h-[53px] rounded-[8px] p-[8px] border-solid border-[2px] border-red bg-transparent"
+                  onClick={toggleDropdown}
+                >
+                  <p className="font-medium large text-darkRed capitalize">{activeAddress ? activeAddress.slice(0, 6) + "...." + activeAddress.slice(-6) : "Connect Wallet"}</p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </nav>
+
+      <div className="mobile-navbar w-[90%] m-auto hidden max-md:flex justify-between items-center pt-[20px]">
+        <NavLink to="/">
+          <img src={isDark ? "/assets/images/logo_dark.png" : "/assets/images/logo_light.png"} alt="Logo" className="h-[67px] object-contain" />
+        </NavLink>
+
+        <Icon icon="pajamas:hamburger" style={{ color: 'var(--text-primary)' }} onClick={() => setOpen(!open)} width={22} className="cursor-pointer" />
+
+        <Drawer placement={placement} closable={false} onClose={onClose} open={open} key={placement} width="80%" className="p-[30px]">
+          <div className="flex justify-between items-center">
+            <NavLink to="/">
+              <img src={isDark ? "/assets/images/logo_dark.png" : "/assets/images/logo_light.png"} alt="Logo" className="h-[45px] my-[10px] mx-[20px] object-contain" onClick={onClose} />
+            </NavLink>
+            <Icon
+              color="var(--text-primary)"
+              icon="charm:cross"
+              className="cursor-pointer"
+              width={24}
+              height={24}
+              onClick={() => {
+                setOpen(false)
+              }}
+            />
+          </div>
+
+          <ul className="flex flex-col space-y-9 p-[20px]">
+            <li className="flex flex-col gap-2">
+              <span className="uppercase large text-[var(--text-secondary)] font-bold font-apex px-[10px]">DeFi</span>
+              <NavLink
+                to="/"
+                onClick={onClose}
+                className={({ isActive }) =>
+                  `cursor-pointer pl-[30px] p-[10px] uppercase text-[var(--text-primary)] font-bold font-apex ${isActive ? 'text-secondary' : ''}`
+                }
+              >
+                Swap
+              </NavLink>
+              <NavLink
+                to="/staking"
+                onClick={onClose}
+                className={({ isActive }) =>
+                  `cursor-pointer pl-[30px] p-[10px] uppercase text-[var(--text-primary)] font-bold font-apex ${isActive ? 'text-secondary' : ''}`
+                }
+              >
+                Staking
+              </NavLink>
+              <NavLink
+                to="/lp-farm"
+                onClick={onClose}
+                className={({ isActive }) =>
+                  `cursor-pointer pl-[30px] p-[10px] uppercase text-[var(--text-primary)] font-bold font-apex ${isActive ? 'text-secondary' : ''}`
+                }
+              >
+                LP Farm
+              </NavLink>
+              {hasFeature('p2pSwap') && (
+              <NavLink
+                to="/p2p"
+                onClick={onClose}
+                className={({ isActive }) =>
+                  `cursor-pointer pl-[30px] p-[10px] uppercase text-[var(--text-primary)] font-bold font-apex ${isActive || location.pathname.startsWith('/p2p/') ? 'text-secondary' : ''}`
+                }
+              >
+                P2P
+              </NavLink>
+              )}
+            </li>
+
+            {hasFeature('launches') && (
+            <li className="uppercase large text-[var(--text-primary)] font-bold font-apex">
+              <NavLink
+                to="/launches"
+                onClick={onClose}
+                className={({ isActive }) =>
+                  `cursor-pointer p-[10px] uppercase ${isActive || location.pathname.startsWith('/launches/') ? 'text-secondary' : ''}`
+                }
+              >
+                Launches
+              </NavLink>
+            </li>
+            )}
+
+
+            <li className="uppercase large text-[var(--text-primary)] font-bold font-apex">
+              <NavLink
+                to="/genesis-mint"
+                onClick={onClose}
+                className={({ isActive }) =>
+                  `cursor-pointer p-[10px] uppercase ${isActive ? 'text-secondary border-solid border-b-2 border-[#DE0308]' : ''}`
+                }
+              >
+                Genesis
+              </NavLink>
+            </li>
+
+
+            <li className="uppercase large text-[var(--text-primary)] font-bold font-apex">
+              <NavLink
+                to="/events"
+                onClick={onClose}
+                className={({ isActive }) =>
+                  `cursor-pointer p-[10px] uppercase relative ${isActive ? 'text-secondary border-solid border-b-2 border-[#DE0308]' : ''}`
+                }
+              >
+                Events
+                {hasActiveEvents && (
+                  <span className="absolute -top-1 -right-2 w-[8px] h-[8px] bg-[#DE0308] rounded-full" />
+                )}
+              </NavLink>
+            </li>
+
+            <li className="uppercase large text-[var(--text-primary)] font-bold font-apex">
+              <NavLink
+                to="/profile"
+                onClick={onClose}
+                className={({ isActive }) =>
+                  `cursor-pointer p-[10px] uppercase ${isActive ? 'text-secondary border-solid border-b-2 border-[#DE0308]' : ''}`
+                }
+              >
+                Profile
+              </NavLink>
+            </li>
+          </ul>
+
+          <div className="flex items-center gap-3 mt-[10px] mb-[10px]">
+            <ChainSelector />
+            <ThemeToggle />
+            <div
+              className="cursor-pointer opacity-60 hover:opacity-100 transition-opacity"
+              onClick={() => {
+                onClose()
+                setIsBugReportOpen(true)
+              }}
+              title="Report a Bug"
+            >
+              <Icon icon="mdi:bug-outline" width={22} color="var(--text-primary)" />
+            </div>
+            {isAlgorand && activeAddress && (
+              <div
+                className="relative cursor-pointer"
+                onClick={() => {
+                  onClose()
+                  setOpenRewardsModal(true)
+                }}
+              >
+                <Icon icon="mdi:gift" width={24} color="#FD0000" />
+                {rewardsAvailable && (
+                  <span className="absolute -top-1 -right-1 w-[10px] h-[10px] bg-green rounded-full" />
+                )}
+              </div>
+            )}
+          </div>
+          <div className="button flex items-center mt-[10px]">
+            {!activeAddress ? (
+              <Button
+                text="Connect Wallet"
+                className="button btn-primary"
+                height={53}
+                width={186}
+                onClick={() => toggleWalletModal()}
+              />
+            ) : (
+              <div ref={dropdownRef} className="relative inline-block text-left" onClick={() => toggleWalletModal()}>
+                <div
+                  className="flex items-center justify-center gap-[10px] cursor-pointer w-[186px] h-[53px] rounded-[8px] p-[8px] border-solid border-[2px] border-red bg-transparent"
+                  onClick={toggleDropdown}
+                >
+                  <p className="font-medium large text-darkRed capitalize">{activeAddress ? activeAddress.slice(0, 6) + "...." + activeAddress.slice(-6) : "Connect Wallet"}</p>
+                </div>
+              </div>
+            )}
+          </div>
+        </Drawer>
+      </div>
+      <ConnectWallet openModal={openWalletModal} closeModal={toggleWalletModal} />
+      <Transact openModal={openDemoModal} setModalState={setOpenDemoModal} />
+      <DailyRewardsModal
+        open={openRewardsModal}
+        onClose={() => {
+          setOpenRewardsModal(false)
+          if (activeAddress) {
+            fetchRewardsStatus(activeAddress)
+              .then((s) => setRewardsAvailable(s.canClaim))
+              .catch(() => {})
+          }
+        }}
+      />
+      <BetaBanner />
+      <BugReportModal isOpen={isBugReportOpen} setIsOpen={setIsBugReportOpen} />
+    </>
+  )
+}
+
+export default Navbar
