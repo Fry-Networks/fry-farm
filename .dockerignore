@@ -1,0 +1,9 @@
+.env
+.env.*
+.git
+node_modules
+*.bak
+*.bak.*
+uploads/
+npm-debug.log*
+.idea
