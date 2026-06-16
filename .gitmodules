@@ -1,6 +1,0 @@
-[submodule "backend"]
-    path = backend
-    url = https://github.com/Fry-Foundation/fry-staking-nodejs.git
-[submodule "frontend"]
-    path = frontend
-    url = https://github.com/Fry-Foundation/fry-staking-frontend.git
