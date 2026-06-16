@@ -1,0 +1,62 @@
+name: Node.js CI/CD with Docker
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    strategy:
+      matrix:
+        node-version: [18]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      
+      - name: Create .env file from GitHub Secrets
+        run: |
+          echo "${{ secrets.Production_ENV}}" > /home/actionsuser/fry-stacking-nodejs-backend/fry-staking-nodejs/fry-staking-nodejs/fry-staking-nodejs/.env
+          echo ".env file created successfully."
+          
+        
+      - name: Build Docker Image
+        run: |
+          echo "🔧 Building Docker image..."
+          docker build -t fry-stacking-backend-img .
+      - name: Stop & Remove Existing Container
+        run: |
+          CONTAINER_ID=$(docker ps -aq --filter "name=fry-stacking-backend")
+          if [ ! -z "$CONTAINER_ID" ]; then
+            echo "🛑 Stopping old container..."
+            docker stop $CONTAINER_ID
+            docker rm $CONTAINER_ID
+          fi
+      - name: Run New Container
+        run: |
+          echo "🚀 Running new container..."
+          docker run -d -p 5000:5000 --name fry-stacking-backend fry-stacking-backend-img
+      - name: Prune Unused Images & Containers
+        run: |
+          echo "🧹 Cleaning up..."
+          docker system prune -af
+  nginx:
+    runs-on: self-hosted
+    needs: build
+    steps:
+      - name: Reload Nginx
+        run: |
+          echo "🔄 Restarting Nginx..."
+          sudo nginx -t
+          sudo systemctl restart nginx
