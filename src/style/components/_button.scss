@@ -1,0 +1,63 @@
+button {
+  color: #fff;
+  text-align: center;
+  font-family: Roboto;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  text-transform: capitalize;
+  transition: all 0.2s ease-in;
+  background: transparent;
+  border-radius: 8px;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  gap: 10px;
+  .rotate-360 {
+    animation: rotateAnimation 2s linear infinite;
+  }
+
+  &.btn-primary {
+    background: linear-gradient(318deg, #fd0000 26.88%, #ff9292 105.85%);
+  }
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+  &.btn-secondary {
+    border-radius: 6px !important;
+    background: rgba(253, 0, 0, 0.1);
+    color: #fd0000 !important;
+    font-size: 14px !important;
+  }
+  &.btn-red {
+    border-radius: 10px !important;
+    background: linear-gradient(318deg, #fd0000 26.88%, #ff9292 105.85%);
+    color: white !important;
+    font-size: 12px !important;
+  }
+  &.btn-red-border {
+    border-radius: 10px !important;
+    border: 2px solid #fd0000 !important;
+    font-size: 16px !important;
+    color: #fd0000 !important;
+  }
+  &.btn-gray {
+    border-radius: 10px !important;
+    background: var(--bg-secondary) !important;
+    color: var(--text-secondary) !important;
+    font-size: 16px !important;
+    transition: all 0.3s ease-in-out;
+    &:hover {
+      color: #fff !important;
+      background: linear-gradient(318deg, #fd0000 26.88%, #ff9292 105.85%) !important;
+    }
+  }
+  // &.btn-blue {
+  //   border-radius: 8.132px;
+  //   background: var(--Primary-color, #143a62);
+  //   color: var(--Page-BG, #fdfdfd) !important;
+  // }
+}

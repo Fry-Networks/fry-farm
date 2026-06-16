@@ -1,0 +1,207 @@
+{
+  "timestamp": "2025-12-01T09:48:25.800Z",
+  "apiBaseUrl": "https://frynodebackend.octalooptechnologies.com",
+  "stakingPools": [
+    {
+      "appId": 2961165577,
+      "address": "FD7IPIE2PZQFC6JRM4TZSY3X3YIXEISIDI5LE66J5EQYJH222V7ZV7DABY",
+      "rewardToken": 2485314946
+    },
+    {
+      "appId": 2967442702,
+      "address": "NOJPKSN535F73PAJDKQR7F74UZMVAQHMWM7T2QVJQY3WQIT4WNT3BZAHRA",
+      "rewardToken": 2485314946
+    },
+    {
+      "appId": 744747283,
+      "address": "BIPL7WDNSIWA3QXTDST4HSFVYARL2E34UVBDDF72GDF4SE6WUFUOG7ACEA",
+      "rewardToken": 735549981
+    },
+    {
+      "appId": 744749869,
+      "address": "23FYKB5SCAUDMCBRCLZSRU6ALS6H3C7LTOU3LQOGCVA7WDURNM4QAOYEUQ",
+      "rewardToken": 735549981
+    },
+    {
+      "appId": 746174920,
+      "address": "4JJKMOCROCAJY5ZMTUEM7NVYNIMMSL5ER7KKLRK5F7P2HU6DQHLNLX3Z5E",
+      "rewardToken": 735549981
+    },
+    {
+      "appId": 746174920,
+      "address": "4JJKMOCROCAJY5ZMTUEM7NVYNIMMSL5ER7KKLRK5F7P2HU6DQHLNLX3Z5E",
+      "rewardToken": 735549981
+    },
+    {
+      "appId": 3278984520,
+      "address": "4C55ZYWNMR5MBZFX234AKVXEJU4QVVE4DQXGQNQMZVQH7V4K6RBIM4LKKM",
+      "rewardToken": 2485314946
+    },
+    {
+      "appId": 3278984520,
+      "address": "4C55ZYWNMR5MBZFX234AKVXEJU4QVVE4DQXGQNQMZVQH7V4K6RBIM4LKKM",
+      "rewardToken": 2485314946
+    },
+    {
+      "appId": 3278984520,
+      "address": "4C55ZYWNMR5MBZFX234AKVXEJU4QVVE4DQXGQNQMZVQH7V4K6RBIM4LKKM",
+      "rewardToken": 2485314946
+    },
+    {
+      "appId": 3278984520,
+      "address": "4C55ZYWNMR5MBZFX234AKVXEJU4QVVE4DQXGQNQMZVQH7V4K6RBIM4LKKM",
+      "rewardToken": 2485314946
+    },
+    {
+      "appId": 3340582785,
+      "address": "YO2B6ED673C2C2UTIC6FI32MKOI5XBOPA7GBM4YRZ66NXPUDSO7SFBLHYE",
+      "rewardToken": 2485314946
+    }
+  ],
+  "farmingPools": [
+    {
+      "appId": 2967628775,
+      "address": "Y4QBZZIJJPOC3HZUL5X5NXMV7UVYMKD676TYEYKA6E5Y2CLDJYY6NWFOSI",
+      "creatorId": "P2L3AXEUWVA3EQLGAPXE5JB7M4PNJQSNMJTRUMGCQ2TTQ7MU66SIZTCQYU",
+      "rewardToken": {
+        "id": "2485314946"
+      },
+      "lpToken": {
+        "tokenA": "2485314946",
+        "tokenB": "2485314946"
+      }
+    },
+    {
+      "appId": 3033114639,
+      "address": "5MLF6UH7XFGWTRNU4OQLRX2CJGEYGHS4XHWNIMG4MCA5GBPEQHE5Q3NAAE",
+      "creatorId": "7KSPCJUIGA46TZ7NCOPERMGL6GPOVYWRGZEJRUNWRWPZUNNM3OXAB5AZBY",
+      "rewardToken": {
+        "id": "27165954"
+      },
+      "lpToken": {
+        "tokenA": "2485314946",
+        "tokenB": "31566704"
+      }
+    },
+    {
+      "appId": 740510993,
+      "address": "5JFCVPQLRZVSBHQN6BCVA7TAL3OSF7O56VYR4EIGT2LPBIW73IOASWI6KE",
+      "creatorId": "7KSPCJUIGA46TZ7NCOPERMGL6GPOVYWRGZEJRUNWRWPZUNNM3OXAB5AZBY",
+      "rewardToken": {
+        "id": "736031747"
+      },
+      "lpToken": {
+        "tokenA": "735549981",
+        "tokenB": "736031747"
+      }
+    },
+    {
+      "appId": 3137665649,
+      "address": "RTDZFK3HHCIIAJK55HMOBOCTI6U77HAIMFRAZTUJTRGXUHDUAZ6INHB2YQ",
+      "creatorId": "7KSPCJUIGA46TZ7NCOPERMGL6GPOVYWRGZEJRUNWRWPZUNNM3OXAB5AZBY",
+      "rewardToken": {
+        "id": "27165954"
+      },
+      "lpToken": {
+        "tokenA": "0",
+        "tokenB": "2485314946"
+      }
+    },
+    {
+      "appId": 743416154,
+      "address": "I6MQSNOLRDRQYDJD4N5UKSSHWXFI36GH2EYQDBCUV2SO3MOGZM46EHB37A",
+      "creatorId": "7KSPCJUIGA46TZ7NCOPERMGL6GPOVYWRGZEJRUNWRWPZUNNM3OXAB5AZBY",
+      "rewardToken": {
+        "id": "0"
+      },
+      "lpToken": {
+        "tokenA": "735549981",
+        "tokenB": "736031747"
+      }
+    },
+    {
+      "appId": 743416836,
+      "address": "DUWVHP6NN2LQB6DZJ4EQ2UQ5CGT2GJZR6GSG6NNIIK64Y3BMJ3KH4K77AE",
+      "creatorId": "7KSPCJUIGA46TZ7NCOPERMGL6GPOVYWRGZEJRUNWRWPZUNNM3OXAB5AZBY",
+      "rewardToken": {
+        "id": "0"
+      },
+      "lpToken": {
+        "tokenA": "736031747",
+        "tokenB": "735549981"
+      }
+    },
+    {
+      "appId": 743418669,
+      "address": "7N43PIZEFDGFO25ZGHSJJ2D2MBHLFQWCDFXDSVF5PXPPCHXG42LECL6M6Q",
+      "creatorId": "7KSPCJUIGA46TZ7NCOPERMGL6GPOVYWRGZEJRUNWRWPZUNNM3OXAB5AZBY",
+      "rewardToken": {
+        "id": "736031747"
+      },
+      "lpToken": {
+        "tokenA": "735549981",
+        "tokenB": "736031747"
+      }
+    },
+    {
+      "appId": 3139373809,
+      "address": "6RASB5UAG2K4BDXH3QDNAENIL3M74CUHZ7KEKPPETYT2JJ2CZTNWCA6EVU",
+      "creatorId": "7KSPCJUIGA46TZ7NCOPERMGL6GPOVYWRGZEJRUNWRWPZUNNM3OXAB5AZBY",
+      "rewardToken": {
+        "id": "0"
+      },
+      "lpToken": {
+        "tokenA": "226701642",
+        "tokenB": "27165954"
+      }
+    },
+    {
+      "appId": 743524641,
+      "address": "WHPD6EKHD3Q7R7U4QSRI7SF2CPZW2OUTU3MXK3RHJALW65CVTUQ2OLPWUE",
+      "creatorId": "YEVYSG5PHUU67XX7UJE23PB5FNB3ON64XQYY55S2N6JBEGLCA6WVVD3UUI",
+      "rewardToken": {
+        "id": "735549981"
+      },
+      "lpToken": {
+        "tokenA": "735549981",
+        "tokenB": "735549981"
+      }
+    },
+    {
+      "appId": 3182616666,
+      "address": "45TV7D3F2DMTJAZNVR34QSIIWYPX5MJBPUGU5T4LJFNXFEN7JNECGUER4M",
+      "creatorId": "7KSPCJUIGA46TZ7NCOPERMGL6GPOVYWRGZEJRUNWRWPZUNNM3OXAB5AZBY",
+      "rewardToken": {
+        "id": "0"
+      },
+      "lpToken": {
+        "tokenA": "2485314946",
+        "tokenB": "27165954"
+      }
+    },
+    {
+      "appId": 746178855,
+      "address": "HPF24FHJ2CJQZPD2CPFAWIN4QE5M3ASJBUSDYZKJ4UN3I4XYSSQXZUNKJM",
+      "creatorId": "D3FCDRYBC4O3A7DDJDYTGPTF2EPV5XQJUPSMLGXCXCM5UY3UJPT6AHVL54",
+      "rewardToken": {
+        "id": "735549981"
+      },
+      "lpToken": {
+        "tokenA": "735549981",
+        "tokenB": "735549981"
+      }
+    },
+    {
+      "appId": 3321700066,
+      "address": "ZBDSFR5SXBCWM2KOIBDKUJGZD745CH64WO7W6DR2OM3OM2LIUZU2BXQZKU",
+      "creatorId": "S64YZ43ZIG4KMKHZQWCE277WEKAV4CYW3C3GZFLA26XBTRQUCKGM3EBIKM",
+      "rewardToken": {
+        "id": "2485314946"
+      },
+      "lpToken": {
+        "tokenA": "2485314946",
+        "tokenB": "3270805287"
+      }
+    }
+  ]
+}
