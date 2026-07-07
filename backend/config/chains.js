@@ -68,7 +68,7 @@ const chains = {
       farming: true,
       nftStaking: true,
       deviceStaking: false,
-      swap: false,
+      swap: true,
       predictionLp: false,
       communityEvents: true,
       zap: false,
