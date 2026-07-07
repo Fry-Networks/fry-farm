@@ -13,7 +13,7 @@ const chains = {
     nativeAsset: { name: 'Algo', symbol: 'ALGO', decimals: 6, id: 0 },
     /** Ordered by priority — circuit breaker in algodService uses this order */
     algodEndpoints: [
-      { name: 'ATLAS00', server: 'http://192.168.9.2', port: 4190, token: process.env.ATLAS00_ALGOD_TOKEN || '' },
+      { name: 'ATLAS00', server: 'http://100.69.195.100', port: 8190, token: process.env.ATLAS00_ALGOD_TOKEN || '' },
       { name: 'Nodely', server: 'https://mainnet-api.4160.nodely.dev', port: 443, token: '' },
       { name: 'Algonode', server: 'https://mainnet-api.algonode.cloud', port: 443, token: '' },
     ],
@@ -36,7 +36,10 @@ const chains = {
       swap: true,
       predictionLp: true,
       communityEvents: true,
+      zap: true,
       p2pSwap: true,
+      launches: true,
+      drops: true,
     },
   },
   'voi-mainnet': {
@@ -68,7 +71,10 @@ const chains = {
       swap: false,
       predictionLp: false,
       communityEvents: true,
+      zap: false,
       p2pSwap: true,
+      launches: false,
+      drops: false,
     },
   },
 };

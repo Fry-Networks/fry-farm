@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Icon } from '@iconify/react'
 import type { AlphaArcadeMarket, AlphaArcadePool } from '../../../types/alphaArcade'
 import { usePreferences } from '../../../contexts/PreferencesContext'
@@ -10,8 +10,14 @@ interface MarketCardProps {
   pool?: AlphaArcadePool
 }
 
+// Upstream market data ships some URLs with a broken S3 region ("us-east2"
+// instead of "us-east-2") — correct it so those images can actually load.
+const fixKnownBadImageHost = (url: string): string =>
+  url.replace('.s3.us-east2.amazonaws.com', '.s3.us-east-2.amazonaws.com')
+
 const MarketCard: React.FC<MarketCardProps> = ({ market, onDeposit, pool }) => {
   const { isSimpleMode } = usePreferences()
+  const [imgFailed, setImgFailed] = useState(false)
   const yesPercent = Math.round(market.yesProb ?? 50)
   const noPercent = 100 - yesPercent
   const isResolved = market.endTs > 0 && market.endTs * 1000 < Date.now()
@@ -71,12 +77,12 @@ const MarketCard: React.FC<MarketCardProps> = ({ market, onDeposit, pool }) => {
     <div className="bg-[var(--bg-card)] rounded-[16px] overflow-hidden shadow-[0px_4px_24.2px_0px_var(--shadow-color)] flex flex-col">
       {/* Image */}
       <div className="relative h-[140px] bg-[var(--bg-secondary)] overflow-hidden">
-        {market.image ? (
+        {market.image && !imgFailed ? (
           <img
-            src={market.image}
+            src={fixKnownBadImageHost(market.image)}
             alt=""
             className="w-full h-full object-cover"
-            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+            onError={() => setImgFailed(true)}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">

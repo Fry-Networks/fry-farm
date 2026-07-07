@@ -28,7 +28,7 @@ const FarmPoolStats: React.FC = () => {
       setAppId(poolId)
       farmStats(poolId)
     } else {
-      console.warn('No poolId found in URL query parameters')
+      navigate('/lp-farm?tab=token', { replace: true })
     }
   }, [location.search])
 
