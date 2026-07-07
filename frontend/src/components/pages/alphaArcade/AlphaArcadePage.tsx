@@ -281,7 +281,7 @@ const AlphaArcadePage: React.FC = () => {
           <div className="flex flex-col items-center gap-[6px]">
             <p className="text-text_clr tracking-[0.54px] large">Active Markets</p>
             <h3 className="small text-[var(--text-heading)] font-medium tracking-[1.08px]">
-              {loading ? '...' : stats?.activePools ?? markets.length}
+              {loading ? '...' : markets.length}
             </h3>
           </div>
           {!isSimpleMode && (

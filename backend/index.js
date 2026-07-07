@@ -43,6 +43,7 @@ const dropsRoute = require('./routes/dropsRoute');
 
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
+const tokenConfigRoute = require('./routes/tokenConfigRoute');
 const connectDB = require("./config/db");
 const seedVoiTokens = require('./seeds/voiTokenSeed');
 const app = express();
@@ -156,6 +157,7 @@ app.use("/bug-reports", writeLimiter, bugReportRoutes);
 app.use("/voi-candles", readLimiter, voiCandleRoutes);
 app.use("/launches", readLimiter, launchesRoute);
 app.use("/drops", readLimiter, dropsRoute);
+app.use("/token-config", readLimiter, tokenConfigRoute);
 
 // 404 handler for undefined routes
 app.use((req, res) => {

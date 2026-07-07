@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import Footer from '../components/layout/footer'
 import Navbar from '../components/layout/navbar'
@@ -20,6 +20,14 @@ const LpFarm = () => {
     setActiveTab(tab)
     setSearchParams({ tab })
   }
+
+  // Keep tab in sync when the URL changes via in-app navigation (e.g. navbar link)
+  useEffect(() => {
+    const urlTab = (searchParams.get('tab') as FarmTab) || 'token'
+    if (['token', 'prediction'].includes(urlTab) && urlTab !== activeTab) {
+      setActiveTab(urlTab)
+    }
+  }, [searchParams])
 
   return (
     <>

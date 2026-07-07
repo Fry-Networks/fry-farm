@@ -36,6 +36,7 @@ const Navbar: React.FC = () => {
   const location = useLocation()
   const isStakeActive = location.pathname === '/staking' || location.pathname.startsWith('/staking')
   const isFarmActive = location.pathname === '/lp-farm' || location.pathname.startsWith('/lp-farm')
+  const isPredictionActive = isFarmActive && location.search.includes('tab=prediction')
   const isP2PActive = location.pathname === '/p2p' || location.pathname.startsWith('/p2p/')
   const isDeFiActive = location.pathname === '/' || isStakeActive || isFarmActive || isP2PActive
   const isLaunchpadActive = location.pathname === '/launches' || location.pathname.startsWith('/launches/')
@@ -128,9 +129,16 @@ const Navbar: React.FC = () => {
                 </li>
                 <li>
                   <NavLink to="/lp-farm" className={({ isActive }) =>
-                    `block px-4 py-2 text-sm font-bold hover:bg-[var(--bg-secondary)] ${isActive ? 'text-secondary' : 'text-[var(--text-primary)]'}`
+                    `block px-4 py-2 text-sm font-bold hover:bg-[var(--bg-secondary)] ${isActive && !isPredictionActive ? 'text-secondary' : 'text-[var(--text-primary)]'}`
                   }>LP Farm</NavLink>
                 </li>
+                {hasFeature('predictionLp') && (
+                <li>
+                  <NavLink to="/lp-farm?tab=prediction" className={() =>
+                    `block px-4 py-2 text-sm font-bold hover:bg-[var(--bg-secondary)] ${isPredictionActive ? 'text-secondary' : 'text-[var(--text-primary)]'}`
+                  }>Prediction LP</NavLink>
+                </li>
+                )}
                 {hasFeature('p2pSwap') && (
                 <li>
                   <NavLink to="/p2p" className={({ isActive }) =>
@@ -282,11 +290,22 @@ const Navbar: React.FC = () => {
                 to="/lp-farm"
                 onClick={onClose}
                 className={({ isActive }) =>
-                  `cursor-pointer pl-[30px] p-[10px] uppercase text-[var(--text-primary)] font-bold font-apex ${isActive ? 'text-secondary' : ''}`
+                  `cursor-pointer pl-[30px] p-[10px] uppercase text-[var(--text-primary)] font-bold font-apex ${isActive && !isPredictionActive ? 'text-secondary' : ''}`
                 }
               >
                 LP Farm
               </NavLink>
+              {hasFeature('predictionLp') && (
+              <NavLink
+                to="/lp-farm?tab=prediction"
+                onClick={onClose}
+                className={() =>
+                  `cursor-pointer pl-[30px] p-[10px] uppercase text-[var(--text-primary)] font-bold font-apex ${isPredictionActive ? 'text-secondary' : ''}`
+                }
+              >
+                Prediction LP
+              </NavLink>
+              )}
               {hasFeature('p2pSwap') && (
               <NavLink
                 to="/p2p"
