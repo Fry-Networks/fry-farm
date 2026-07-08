@@ -1,4 +1,5 @@
 const logger = require("../config/logger");
+const { encodeAddress } = require("algosdk");
 const Event = require("../models/eventSchema");
 const Challenge = require("../models/challengeSchema");
 const EventPoints = require("../models/eventPointsSchema");
@@ -14,7 +15,7 @@ const AlphaArcadePosition = require("../models/alphaArcadePositionSchema");
 const Staking = require("../models/stakingSchema");
 const Farming = require("../models/farmingSchema");
 const { getAsaUsdPrice } = require("./priceService");
-const { getIndexerUrl } = require("./algodService");
+const { getIndexerUrl, getAlgodUrl, getAlgodToken } = require("./algodService");
 
 async function buildPoolTokenMap() {
   const map = {};
@@ -292,50 +293,76 @@ async function calcPredictionLpVolume(challenge, event) {
 }
 
 const GENESIS_NFT_APP_ID = 3509410324;
-const MINT_SELECTOR = (() => {
-  const crypto = require('crypto');
-  return crypto.createHash('sha512-256').update('mint(axfer)uint64').digest().slice(0, 4);
-})();
-const MAX_INDEXER_PAGES = 20;
+const HOLDER_BOX_PREFIX = 0x62;
+const HOLDER_BOX_NAME_LEN = 33;
+const HOLDER_BOX_VALUE_LEN = 8;
 
-async function calcGenesisNftMinting(challenge, event) {
-  const indexerUrl = getIndexerUrl('algorand-mainnet');
+const PUBLIC_ALGOD_FALLBACK = 'https://mainnet-api.algonode.cloud';
+
+async function getGenesisNftHolders() {
+  let algodUrl = getAlgodUrl('algorand-mainnet');
+  const token = getAlgodToken('algorand-mainnet');
+  let algodHeaders = token ? { 'X-Algo-API-Token': token } : {};
   const walletPoints = {};
-  let nextToken = '';
-  let pageCount = 0;
 
+  let boxesRes;
   try {
-    do {
-      let url = `${indexerUrl}/v2/transactions?application-id=${GENESIS_NFT_APP_ID}&tx-type=appl`
-        + `&after-time=${event.startDate.toISOString()}&before-time=${event.endDate.toISOString()}&limit=500`;
-      if (nextToken) url += `&next=${encodeURIComponent(nextToken)}`;
-
-      const res = await fetch(url);
-      if (!res.ok) throw new Error(`Indexer ${res.status}: ${await res.text().catch(() => '')}`);
-      const data = await res.json();
-
-      for (const txn of (data.transactions || [])) {
-        const appArgs = txn['application-transaction']?.['application-args'] || [];
-        if (appArgs.length === 0) continue;
-        const firstArg = Buffer.from(appArgs[0], 'base64');
-        if (firstArg.length >= 4 && firstArg.slice(0, 4).equals(MINT_SELECTOR)) {
-          walletPoints[txn.sender] = (walletPoints[txn.sender] || 0) + 1 * challenge.pointsMultiplier;
-        }
-      }
-
-      nextToken = data['next-token'] || '';
-      pageCount++;
-      if (pageCount >= MAX_INDEXER_PAGES) {
-        logger.warn(`calcGenesisNftMinting: hit pagination cap (${MAX_INDEXER_PAGES} pages, ~${pageCount * 500} txns). Some mints may be uncounted.`);
-        break;
-      }
-    } while (nextToken);
+    boxesRes = await fetch(`${algodUrl}/v2/applications/${GENESIS_NFT_APP_ID}/boxes`, { headers: algodHeaders });
+    if (!boxesRes.ok) throw new Error(`status ${boxesRes.status}`);
   } catch (err) {
-    logger.error('calcGenesisNftMinting: indexer query failed:', err.message);
+    logger.warn(`getGenesisNftHolders: configured algod ${algodUrl} failed (${err.message}), falling back to ${PUBLIC_ALGOD_FALLBACK}`);
+    algodUrl = PUBLIC_ALGOD_FALLBACK;
+    algodHeaders = {};
+    boxesRes = await fetch(`${algodUrl}/v2/applications/${GENESIS_NFT_APP_ID}/boxes`);
+    if (!boxesRes.ok) {
+      throw new Error(`Algod boxes fetch ${boxesRes.status}: ${await boxesRes.text().catch(() => '')}`);
+    }
+  }
+  const boxesData = await boxesRes.json();
+
+  for (const boxMeta of (boxesData.boxes || [])) {
+    const name = typeof boxMeta === 'string' ? boxMeta : boxMeta.name;
+    if (!name) continue;
+
+    const nameBuf = Buffer.from(name, 'base64');
+    if (nameBuf.length !== HOLDER_BOX_NAME_LEN || nameBuf[0] !== HOLDER_BOX_PREFIX) continue;
+
+    const boxUrl = `${algodUrl}/v2/applications/${GENESIS_NFT_APP_ID}/box?name=b64:${encodeURIComponent(name)}`;
+    const boxRes = await fetch(boxUrl, { headers: algodHeaders });
+    if (!boxRes.ok) {
+      logger.warn(`getGenesisNftHolders: skipping box ${name}, fetch failed: ${boxRes.status}`);
+      continue;
+    }
+    const boxData = await boxRes.json();
+    const valueBuf = Buffer.from(boxData.value, 'base64');
+    if (valueBuf.length !== HOLDER_BOX_VALUE_LEN) {
+      logger.warn(`getGenesisNftHolders: skipping box ${name}, value length ${valueBuf.length}`);
+      continue;
+    }
+
+    const count = Number(valueBuf.readBigUInt64BE());
+    const pubkey = nameBuf.slice(1);
+    const wallet = encodeAddress(new Uint8Array(pubkey));
+    walletPoints[wallet] = (walletPoints[wallet] || 0) + count;
   }
 
-  logger.info(`calcGenesisNftMinting: found ${Object.keys(walletPoints).length} minters`);
   return walletPoints;
+}
+
+async function calcGenesisNftMinting(challenge, event) {
+  try {
+    const holderCounts = await getGenesisNftHolders();
+    const walletPoints = {};
+    for (const [wallet, count] of Object.entries(holderCounts)) {
+      walletPoints[wallet] = count * challenge.pointsMultiplier;
+    }
+
+    logger.info(`calcGenesisNftMinting: found ${Object.keys(walletPoints).length} holders`);
+    return walletPoints;
+  } catch (err) {
+    logger.error('calcGenesisNftMinting: holder lookup failed:', err.message);
+    return {};
+  }
 }
 
 const CALCULATORS = {
@@ -437,4 +464,4 @@ async function calculateAllActiveEvents() {
   }
 }
 
-module.exports = { calculatePointsForEvent, calculateAllActiveEvents };
+module.exports = { calculatePointsForEvent, calculateAllActiveEvents, calcGenesisNftMinting };

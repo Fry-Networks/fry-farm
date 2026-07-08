@@ -121,6 +121,27 @@ function getIndexerUrl(chainId = DEFAULT_CHAIN_ID) {
   return nodes[0].server;
 }
 
+/**
+ * Get the algod base URL for raw fetch() calls.
+ * Returns the server URL of the first healthy algod endpoint.
+ */
+function getAlgodUrl(chainId = DEFAULT_CHAIN_ID) {
+  const nodes = getNodes(chainId);
+  for (const node of nodes) {
+    if (!node.circuitOpen) return `${node.server}:${node.port}`;
+  }
+  return `${nodes[0].server}:${nodes[0].port}`;
+}
+
+/** Get the algod auth token for raw fetch() calls. */
+function getAlgodToken(chainId = DEFAULT_CHAIN_ID) {
+  const nodes = getNodes(chainId);
+  for (const node of nodes) {
+    if (!node.circuitOpen) return node.token;
+  }
+  return nodes[0].token;
+}
+
 module.exports = {
   // Backward compatible (algorand-mainnet default)
   withFallback,
@@ -130,4 +151,6 @@ module.exports = {
   getAlgodClientForChain,
   getIndexerClient,
   getIndexerUrl,
+  getAlgodUrl,
+  getAlgodToken,
 };
