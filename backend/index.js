@@ -191,6 +191,10 @@ require('./crons/voiPriceSamplerCron');
 require('./crons/vestingSeedingCron');
 require('./crons/feeDistributionCron');
 
+process.on('unhandledRejection', (reason) => { try { logger.error('unhandledRejection', reason && reason.message ? reason.message : String(reason)); } catch(_){} });
+process.on('uncaughtException', (err) => { try { logger.error('uncaughtException', err && err.message ? err.message : String(err)); } catch(_){} });
+
+
 // Start the server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

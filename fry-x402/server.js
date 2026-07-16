@@ -23,6 +23,82 @@ if (!PAY_TO || PAY_TO.length !== 58) {
 }
 
 const app = express();
+
+// === METRICS TRACKING ===
+import fs from 'fs';
+
+const SNAP = '/data/metrics.json';
+let metrics = {
+  since: new Date().toISOString(),
+  perEndpoint: {
+    fleet: { challenges: 0, verified: 0, settled: 0 },
+    farm: { challenges: 0, verified: 0, settled: 0 },
+    rewards: { challenges: 0, verified: 0, settled: 0 }
+  },
+  totals: { challenges: 0, verified: 0, settled: 0 }
+};
+
+if (fs.existsSync(SNAP)) {
+  try {
+    const snap = JSON.parse(fs.readFileSync(SNAP, 'utf8'));
+    metrics = snap;
+  } catch(e) {
+    console.error('Failed to load metrics snapshot:', e.message);
+  }
+}
+
+function saveSnap() {
+  try {
+    fs.writeFileSync(SNAP, JSON.stringify(metrics), 'utf8');
+  } catch(e) {
+    console.error('Failed to save metrics snapshot:', e.message);
+  }
+}
+
+setInterval(saveSnap, 60000);
+
+process.on('SIGTERM', () => {
+  saveSnap();
+  process.exit(0);
+});
+
+app.use((req, res, next) => {
+  const original_end = res.end;
+  res.end = function(...args) {
+    const path = req.path;
+    const status = res.statusCode;
+    
+    let endpoint = null;
+    if (path.includes('/fleet')) endpoint = 'fleet';
+    else if (path.includes('/farm')) endpoint = 'farm';
+    else if (path.includes('/rewards')) endpoint = 'rewards';
+    
+    if (endpoint && (status === 402 || status === 200)) {
+      if (status === 402) {
+        metrics.perEndpoint[endpoint].challenges++;
+        metrics.totals.challenges++;
+      } else if (status === 200) {
+        metrics.perEndpoint[endpoint].verified++;
+        metrics.perEndpoint[endpoint].settled++;
+        metrics.totals.verified++;
+        metrics.totals.settled++;
+      }
+    }
+    
+    return original_end.apply(res, args);
+  };
+  next();
+});
+
+app.get('/_metrics', (req, res) => {
+  const token = req.headers['x-metrics-token'];
+  if (token !== process.env.METRICS_TOKEN) {
+    return res.status(401).json({ error: 'unauthorized' });
+  }
+  res.json({ since: metrics.since, perEndpoint: metrics.perEndpoint, totals: metrics.totals });
+});
+// === END METRICS ===
+
 app.disable("x-powered-by");
 
 const facilitatorClient = new HTTPFacilitatorClient({ url: FACILITATOR_URL });

@@ -57,6 +57,10 @@ services:
 
   fry-x402:
     build: ./fry-x402
+    env_file:
+      - ./fry-x402/.env
+    volumes:
+      - ./fry-x402/data:/data
     image: fry-x402:latest
     container_name: fry-x402
     restart: unless-stopped

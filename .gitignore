@@ -16,3 +16,5 @@ __pycache__/
 # Deploy plans (contain compiled TEAL base64)
 deploy_v2_*.json
 build_round*.py
+fry-x402/.env
+fry-x402/data/

@@ -37,10 +37,14 @@ router.post('/nonce', authLimiter, async (req, res) => {
     return res.status(400).json({ success: false, message: 'Invalid Algorand address' });
   }
 
-  const nonce = crypto.randomBytes(32).toString('hex');
-  await redis.set(`nonce:${wallet}`, nonce, 'EX', NONCE_TTL_SEC);
-
-  return res.json({ success: true, nonce });
+  try {
+    const nonce = crypto.randomBytes(32).toString('hex');
+    await redis.set(`nonce:${wallet}`, nonce, 'EX', NONCE_TTL_SEC);
+    return res.json({ success: true, nonce });
+  } catch(e) {
+    logger.error('nonce redis unavailable', e.message);
+    return res.status(503).json({success:false,error:'auth temporarily unavailable'});
+  }
 });
 
 /**
@@ -69,9 +73,9 @@ router.post('/verify', authLimiter, async (req, res) => {
   }
 
   // Consume nonce (single use)
-  await redis.del(`nonce:${wallet}`);
-
   try {
+    const storedNonce = await redis.get(`nonce:${wallet}`);
+    await redis.del(`nonce:${wallet}`);
     // Decode the signed transaction
     const stxnBytes = Buffer.from(signedTxn, 'base64');
     const decoded = algosdk.decodeSignedTransaction(stxnBytes);
