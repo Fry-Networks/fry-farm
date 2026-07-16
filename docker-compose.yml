@@ -54,3 +54,31 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+
+  fry-x402:
+    build: ./fry-x402
+    image: fry-x402:latest
+    container_name: fry-x402
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3402:3402"
+    environment:
+      - PORT=3402
+      - PAY_TO=IQGTOUZJMRO6K54AHPLJYEUMTOVJTPMHZKABXFSRZ4PTPZPCSV37VPCLTA
+      - FACILITATOR_URL=https://facilitator.goplausible.xyz
+      - BACKEND_URL=http://backend:5000
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    depends_on:
+      - backend
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 256m
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
