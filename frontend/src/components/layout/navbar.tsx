@@ -174,6 +174,12 @@ const Navbar: React.FC = () => {
               </NavLink>
             </li>
 
+            <li className="uppercase large text-[var(--text-primary)] font-bold font-apex">
+              <a href="/x402/" className="cursor-pointer p-[10px] uppercase">
+                Agent API
+              </a>
+            </li>
+
 
             <li className="uppercase large text-[var(--text-primary)] font-bold font-apex">
               <NavLink
@@ -344,6 +350,12 @@ const Navbar: React.FC = () => {
               >
                 Genesis
               </NavLink>
+            </li>
+
+            <li className="uppercase large text-[var(--text-primary)] font-bold font-apex">
+              <a href="/x402/" className="cursor-pointer p-[10px] uppercase">
+                Agent API
+              </a>
             </li>
 
 
