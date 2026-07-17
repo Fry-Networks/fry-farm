@@ -13,6 +13,7 @@ import { paymentMiddleware, x402ResourceServer } from "@x402-avm/express";
 import { registerExactAvmScheme } from "@x402-avm/avm/exact/server";
 import { HTTPFacilitatorClient } from "@x402-avm/core/server";
 import { ALGORAND_MAINNET_CAIP2, USDC_MAINNET_ASA_ID } from "@x402-avm/avm";
+import { declareDiscoveryExtension } from "@x402-avm/extensions/bazaar";
 import algosdk from "algosdk";
 import fs from "fs";
 
@@ -127,7 +128,35 @@ const facilitatorClient = new HTTPFacilitatorClient({ url: FACILITATOR_URL });
 const server = new x402ResourceServer(facilitatorClient);
 registerExactAvmScheme(server);
 
-const accept = (price, description) => ({
+// Public URL base for 402 resource fields. The edge (Bunny -> nginx) strips the
+// /x402 prefix and terminates TLS, so req-derived URLs come out as
+// http://fry.farm/<path> — resource must be pinned explicitly per route.
+const PUBLIC_X402_BASE = process.env.PUBLIC_X402_BASE || "https://fry.farm/x402";
+
+// Bazaar discovery input schema derived from a builder's params doc (same data as /catalog).
+function paramDiscovery(params = {}) {
+  const properties = {};
+  for (const [k, d] of Object.entries(params)) {
+    const doc = String(d);
+    const type = /string\[\]/.test(doc) ? "array" : /uint64/.test(doc) ? "integer" : "string";
+    properties[k] = type === "array" ? { type, items: { type: "string" }, description: doc } : { type, description: doc };
+  }
+  const required = Object.keys(params).filter((k) => !/optional/i.test(String(params[k])));
+  return { properties, required };
+}
+
+// Example request body satisfying paramDiscovery's required fields (schema-valid placeholder values).
+function exampleFromParams(params = {}) {
+  const body = {};
+  for (const [k, d] of Object.entries(params)) {
+    const doc = String(d);
+    if (/optional/i.test(doc)) continue;
+    body[k] = /string\[\]/.test(doc) ? ["<base64>"] : /uint64/.test(doc) ? 0 : /address/.test(doc) ? "<algorand address>" : "<string>";
+  }
+  return body;
+}
+
+const accept = (price, description, publicPath, discovery) => ({
   accepts: {
     scheme: "exact",
     network: ALGORAND_MAINNET_CAIP2,
@@ -136,6 +165,8 @@ const accept = (price, description) => ({
     extra: { asset: USDC_MAINNET_ASA_ID },
   },
   description,
+  ...(publicPath ? { resource: PUBLIC_X402_BASE + publicPath } : {}),
+  ...(discovery ? { extensions: declareDiscoveryExtension(discovery) } : {}),
 });
 
 // ---------------------------------------------------------------------------
@@ -523,14 +554,34 @@ const builders = {
 
 // Build the payment routes map from the registry + submit/status.
 const routes = {
-  "GET /fleet": accept(PRICE_FLEET, "Live Fry Networks DePIN device-staking pool telemetry (aggregated)"),
-  "GET /farm": accept(PRICE_FARM, "fry.farm farming/pool analytics — pools, TVL proxies, positions"),
-  "GET /rewards": accept(PRICE_REWARDS, "FRY reward emission status, daily budget, and leaderboard"),
-  "POST /actions/submit": accept(PRICE_SUBMIT, "Submit a signed atomic group to Algorand mainnet; waits (<=8 rounds) for confirmation."),
-  "GET /actions/status": accept(PRICE_STATUS, "Look up a transaction's pending/confirmed status by txid."),
+  "GET /fleet": accept(PRICE_FLEET, "Live Fry Networks DePIN device-staking pool telemetry (aggregated)", "/fleet", {
+    output: { example: { resource: "fleet", generatedAt: "2026-07-17T00:00:00.000Z", source: "fry.farm", network: "Fry Networks DePIN", poolCount: 1, pools: [] } },
+  }),
+  "GET /farm": accept(PRICE_FARM, "fry.farm farming/pool analytics — pools, TVL proxies, positions", "/farm", {
+    output: { example: { resource: "farm", generatedAt: "2026-07-17T00:00:00.000Z", source: "fry.farm", farmingPoolCount: 1, farmTokenPoolCount: 1, farmingPools: [], farmTokenPools: [] } },
+  }),
+  "GET /rewards": accept(PRICE_REWARDS, "FRY reward emission status, daily budget, and leaderboard", "/rewards", {
+    output: { example: { resource: "rewards", generatedAt: "2026-07-17T00:00:00.000Z", source: "fry.farm", token: "FRY", dailyBudget: {}, leaderboard: [] } },
+  }),
+  "POST /actions/submit": accept(PRICE_SUBMIT, "Submit a signed atomic group to Algorand mainnet; waits (<=8 rounds) for confirmation.", "/actions/submit", {
+    bodyType: "json",
+    input: { txnsB64: ["<base64 signed txn>"] },
+    inputSchema: paramDiscovery({ txnsB64: "string[] base64-encoded SIGNED transactions of one atomic group (<=16)" }),
+    output: { example: { status: "confirmed", round: 51000000, txids: ["TXID"] } },
+  }),
+  "GET /actions/status": accept(PRICE_STATUS, "Look up a transaction's pending/confirmed status by txid.", "/actions/status", {
+    input: { txid: "<transaction id>" },
+    inputSchema: paramDiscovery({ txid: "string transaction id (query param)" }),
+    output: { example: { txid: "TXID", confirmed: true, round: 51000000, poolError: null } },
+  }),
 };
 for (const [key, def] of Object.entries(builders)) {
-  routes[`POST /actions/${key}/build`] = accept(def.price, def.summary);
+  routes[`POST /actions/${key}/build`] = accept(def.price, def.summary, `/actions/${key}/build`, {
+    bodyType: "json",
+    input: exampleFromParams(def.params),
+    inputSchema: paramDiscovery(def.params),
+    output: { example: { action: key, network: "algorand-mainnet", txnsB64: ["<base64 unsigned txn>"], signingInstructions: "Sign every index of the group with your own wallet, then POST the signed group to /x402/actions/submit." } },
+  });
 }
 
 // ---- FREE surfaces (declared before/after the gate; the gate only matches routes above) ----
