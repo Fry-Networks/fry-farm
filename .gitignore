@@ -18,3 +18,23 @@ deploy_v2_*.json
 build_round*.py
 fry-x402/.env
 fry-x402/data/
+
+# open-source hygiene
+*.pem
+*.key
+*.p12
+*.pfx
+*.keystore
+*.jks
+id_rsa
+id_ed25519
+.npmrc
+.netrc
+*.tfstate
+*.tfstate.*
+kubeconfig
+serviceAccount*.json
+secrets.json
+*.sqlite
+*.sqlite3
+*.db
